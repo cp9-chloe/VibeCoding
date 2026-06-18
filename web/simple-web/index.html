@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A modern student resume website." />
+  <title>Student Resume | Maya Chen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background-orb orb-a"></div>
+  <div class="background-orb orb-b"></div>
+
+  <main class="page-shell">
+    <header class="hero card reveal">
+      <p class="eyebrow">Student Resume</p>
+      <div class="hero-content">
+        <div>
+          <h1>Maya Chen</h1>
+          <p class="intro">
+            Curious learner, creative builder, and active student who enjoys blending technology,
+            teamwork, and design.
+          </p>
+        </div>
+        <div class="hero-badge">
+          <span>Class of 2027</span>
+          <strong>Future Computer Scientist</strong>
+        </div>
+      </div>
+      <nav class="quick-links" aria-label="Section navigation">
+        <a href="#school">School</a>
+        <a href="#hobbies">Hobbies</a>
+        <a href="#subjects">Subjects</a>
+        <a href="#links">Links</a>
+      </nav>
+    </header>
+
+    <section id="school" class="grid-two">
+      <article class="card reveal accent-panel">
+        <p class="section-label">School Information</p>
+        <h2>Westview High School</h2>
+        <p>
+          Grade 11 student focused on academic growth, leadership, and hands-on projects.
+          I participate in STEM clubs, peer tutoring, and community events.
+        </p>
+        <dl class="details-list">
+          <div>
+            <dt>Location</dt>
+            <dd>Seattle, Washington</dd>
+          </div>
+          <div>
+            <dt>GPA</dt>
+            <dd>3.9 / 4.0</dd>
+          </div>
+          <div>
+            <dt>Focus</dt>
+            <dd>Computer Science and Design</dd>
+          </div>
+        </dl>
+      </article>
+
+      <aside class="card reveal stats-panel">
+        <p class="section-label">At a glance</p>
+        <div class="stat-grid">
+          <div>
+            <strong>5+</strong>
+            <span>school clubs and activities</span>
+          </div>
+          <div>
+            <strong>12</strong>
+            <span>community hours this semester</span>
+          </div>
+          <div>
+            <strong>3</strong>
+            <span>years of coding experience</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="hobbies" class="card reveal">
+      <p class="section-label">Hobbies and Activities</p>
+      <div class="pill-grid">
+        <span>Robotics Club</span>
+        <span>Volleyball</span>
+        <span>Digital Art</span>
+        <span>Volunteering</span>
+        <span>Reading Sci-Fi</span>
+        <span>Weekend Hiking</span>
+      </div>
+    </section>
+
+    <section id="subjects" class="card reveal">
+      <p class="section-label">Favorite Subjects</p>
+      <div class="subject-grid">
+        <article>
+          <h3>Mathematics</h3>
+          <p>Problem solving, patterns, and logic are my favorite parts of math.</p>
+        </article>
+        <article>
+          <h3>Computer Science</h3>
+          <p>I enjoy building websites, experimenting with code, and learning new tools.</p>
+        </article>
+        <article>
+          <h3>Art & Design</h3>
+          <p>Creative projects help me think visually and communicate ideas clearly.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="links" class="card reveal links-section">
+      <p class="section-label">Links</p>
+      <div class="link-list">
+        <a href="mailto:maya.chen@example.com">maya.chen@example.com</a>
+        <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn Profile</a>
+        <a href="https://github.com" target="_blank" rel="noreferrer">GitHub Portfolio</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built for a modern student resume showcase.</p>
+    <span id="current-year"></span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
