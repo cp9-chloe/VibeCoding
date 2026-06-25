@@ -10,58 +10,49 @@
   <div class="app-shell">
     <header>
       <h1>Custom Countdown</h1>
-      <p>Use the buttons below each value to set hours, minutes, and seconds.</p>
+      <p>Enter your desired hours, minutes, and seconds below.</p>
     </header>
 
     <section class="countdown-card">
-      <div class="timer-grid" aria-live="polite">
-        <div class="timer-column">
-          <span id="hours">00</span>
-          <small>Hours</small>
-        </div>
-        <div class="timer-column">
-          <span id="minutes">00</span>
-          <small>Minutes</small>
-        </div>
-        <div class="timer-column">
-          <span id="seconds">00</span>
-          <small>Seconds</small>
-        </div>
-      </div>
-
-      <div class="controls-grid">
-        <div class="control-column">
-          <button type="button" data-unit="hours" data-action="increment">+</button>
-          <button type="button" data-unit="hours" data-action="decrement">−</button>
-        </div>
-        <div class="control-column">
-          <button type="button" data-unit="minutes" data-action="increment">+</button>
-          <button type="button" data-unit="minutes" data-action="decrement">−</button>
-        </div>
-        <div class="control-column">
-          <button type="button" data-unit="seconds" data-action="increment">+</button>
-          <button type="button" data-unit="seconds" data-action="decrement">−</button>
-        </div>
-      </div>
-
-      <div class="settings-panel">
-        <div class="field-group">
-          <label for="bg-color">Background Color</label>
-          <input type="color" id="bg-color" value="#102a43" />
+      <form id="timer-form">
+        <div class="timer-grid" aria-live="polite">
+          <div class="timer-column">
+            <input type="number" id="hours-input" min="0" value="0" />
+            <small>Hours</small>
+          </div>
+          <div class="timer-column">
+            <input type="number" id="minutes-input" min="0" max="59" value="0" />
+            <small>Minutes</small>
+          </div>
+          <div class="timer-column">
+            <input type="number" id="seconds-input" min="0" max="59" value="0" />
+            <small>Seconds</small>
+          </div>
         </div>
 
-        <div class="field-group">
-          <label for="bg-image">Background Image URL</label>
-          <input type="url" id="bg-image" placeholder="https://example.com/image.jpg" />
-        </div>
+        <div class="settings-panel">
+          <div class="field-group">
+            <label for="bg-color">Background Color</label>
+            <input type="color" id="bg-color" value="#102a43" />
+          </div>
 
-        <div class="field-group">
-          <label for="overlay-color">Overlay Color</label>
-          <input type="color" id="overlay-color" value="#000000" />
-        </div>
-      </div>
+          <div class="field-group">
+            <label for="bg-image">Background Image URL</label>
+            <input type="url" id="bg-image" placeholder="https://example.com/image.jpg" />
+          </div>
 
-      <div class="message" id="message">Customize the background, then set your time.</div>
+          <div class="field-group">
+            <label for="overlay-color">Overlay Color</label>
+            <input type="color" id="overlay-color" value="#000000" />
+          </div>
+
+          <div class="field-group actions">
+            <button type="submit">Start Countdown</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="message" id="message">Customize the background and set your timer values.</div>
     </section>
   </div>
 

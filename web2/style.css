@@ -66,7 +66,7 @@ header p {
   display: grid;
   grid-template-columns: repeat(3, minmax(100px, 1fr));
   gap: 18px;
-  align-items: end;
+  align-items: start;
   margin-bottom: 22px;
 }
 
@@ -78,55 +78,35 @@ header p {
   text-align: center;
 }
 
-.timer-column span {
-  display: block;
-  font-size: clamp(3rem, 6vw, 4rem);
+.timer-column input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 18px 0;
+  font-size: 2.6rem;
   font-weight: 700;
-  letter-spacing: -0.05em;
+  text-align: center;
+}
+
+.timer-column input::-webkit-inner-spin-button,
+.timer-column input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .timer-column small {
   display: block;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 1rem;
   opacity: 0.8;
-}
-
-.controls-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(100px, 1fr));
-  gap: 18px;
-  margin-bottom: 28px;
-}
-
-.control-column {
-  display: grid;
-  gap: 12px;
-}
-
-.control-column button {
-  width: 100%;
-  padding: 14px 0;
-  font-size: 1.7rem;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.control-column button:hover,
-.control-column button:focus-visible {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
 }
 
 .settings-panel {
   display: grid;
   gap: 18px;
 }
-
 .field-group {
   display: grid;
   gap: 10px;

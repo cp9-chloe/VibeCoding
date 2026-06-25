@@ -1,15 +1,16 @@
+const timerForm = document.getElementById('timer-form');
+const hoursInput = document.getElementById('hours-input');
+const minutesInput = document.getElementById('minutes-input');
+const secondsInput = document.getElementById('seconds-input');
 const bgColorInput = document.getElementById('bg-color');
 const bgImageInput = document.getElementById('bg-image');
 const overlayColorInput = document.getElementById('overlay-color');
 const message = document.getElementById('message');
-const hoursEl = document.getElementById('hours');
-const minutesEl = document.getElementById('minutes');
-const secondsEl = document.getElementById('seconds');
-const controlButtons = document.querySelectorAll('.control-column button');
+const hoursEl = document.getElementById('hours-input');
+const minutesEl = document.getElementById('minutes-input');
+const secondsEl = document.getElementById('seconds-input');
 
-let hours = 0;
-let minutes = 0;
-let seconds = 0;
+let remainingSeconds = 0;
 let countdownInterval = null;
 
 function pad(value) {
@@ -40,68 +41,63 @@ function hexToRgba(hex, alpha = 1) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function updateTimerDisplay() {
-  hoursEl.textContent = pad(hours);
-  minutesEl.textContent = pad(minutes);
-  secondsEl.textContent = pad(seconds);
+function getInputValue(input, max) {
+  const value = Number(input.value);
+  if (Number.isNaN(value) || value < 0) {
+    return 0;
+  }
+  if (typeof max === 'number') {
+    return Math.min(value, max);
+  }
+  return value;
 }
 
-function normalizeTime() {
-  if (seconds >= 60) {
-    minutes += Math.floor(seconds / 60);
-    seconds %= 60;
-  }
-  if (seconds < 0) {
-    const borrow = Math.ceil(Math.abs(seconds) / 60);
-    minutes -= borrow;
-    seconds += borrow * 60;
-  }
-
-  if (minutes >= 60) {
-    hours += Math.floor(minutes / 60);
-    minutes %= 60;
-  }
-  if (minutes < 0) {
-    const borrow = Math.ceil(Math.abs(minutes) / 60);
-    hours -= borrow;
-    minutes += borrow * 60;
-  }
-
-  if (hours < 0) {
-    hours = 0;
-  }
-  if (minutes < 0) {
-    minutes = 0;
-  }
-  if (seconds < 0) {
-    seconds = 0;
-  }
+function normalizeInputs() {
+  const hours = getInputValue(hoursInput);
+  const minutes = getInputValue(minutesInput, 59);
+  const seconds = getInputValue(secondsInput, 59);
+  hoursInput.value = hours;
+  minutesInput.value = minutes;
+  secondsInput.value = seconds;
 }
 
-function changeTime(unit, delta) {
+function setTimerFromSeconds(total) {
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  hoursInput.value = hours;
+  minutesInput.value = minutes;
+  secondsInput.value = seconds;
+}
+
+function updateTimerMessage() {
+  const hours = getInputValue(hoursInput);
+  const minutes = getInputValue(minutesInput, 59);
+  const seconds = getInputValue(secondsInput, 59);
+
   if (countdownInterval) {
-    clearInterval(countdownInterval);
-    countdownInterval = null;
+    message.textContent = 'Countdown is running...';
+    return;
   }
 
-  if (unit === 'hours') {
-    hours += delta;
+  if (hours === 0 && minutes === 0 && seconds === 0) {
+    message.textContent = 'Customize the background and set your timer values.';
+  } else {
+    message.textContent = 'Ready to start your countdown.';
   }
-  if (unit === 'minutes') {
-    minutes += delta;
-  }
-  if (unit === 'seconds') {
-    seconds += delta;
-  }
-
-  normalizeTime();
-  updateTimerDisplay();
-  message.textContent = 'Time updated. Press any button to continue customizing.';
 }
 
-function startCountdown() {
-  if (hours === 0 && minutes === 0 && seconds === 0) {
-    message.textContent = 'Set a duration before starting the countdown.';
+function startCountdown(event) {
+  event.preventDefault();
+  normalizeInputs();
+
+  const hours = getInputValue(hoursInput);
+  const minutes = getInputValue(minutesInput, 59);
+  const seconds = getInputValue(secondsInput, 59);
+  remainingSeconds = hours * 3600 + minutes * 60 + seconds;
+
+  if (remainingSeconds <= 0) {
+    message.textContent = 'Enter a duration greater than zero to start the countdown.';
     return;
   }
 
@@ -110,51 +106,49 @@ function startCountdown() {
   }
 
   countdownInterval = setInterval(() => {
-    if (hours === 0 && minutes === 0 && seconds === 0) {
+    if (remainingSeconds <= 0) {
       clearInterval(countdownInterval);
       countdownInterval = null;
       message.textContent = 'Countdown complete!';
       return;
     }
 
-    if (seconds > 0) {
-      seconds -= 1;
-    } else if (minutes > 0) {
-      minutes -= 1;
-      seconds = 59;
-    } else if (hours > 0) {
-      hours -= 1;
-      minutes = 59;
-      seconds = 59;
-    }
-
-    updateTimerDisplay();
-    message.textContent = 'Countdown in progress...';
+    remainingSeconds -= 1;
+    setTimerFromSeconds(remainingSeconds);
+    message.textContent = 'Countdown is running...';
   }, 1000);
 }
 
-controlButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    const unit = button.dataset.unit;
-    const action = button.dataset.action;
-    const delta = action === 'increment' ? 1 : -1;
-    changeTime(unit, delta);
-  });
+function stopCountdown() {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+}
+
+hoursInput.addEventListener('input', () => {
+  stopCountdown();
+  normalizeInputs();
+  updateTimerMessage();
 });
 
-const startButton = document.createElement('button');
-startButton.type = 'button';
-startButton.textContent = 'Start Countdown';
-startButton.className = 'start-button';
-startButton.addEventListener('click', startCountdown);
+minutesInput.addEventListener('input', () => {
+  stopCountdown();
+  normalizeInputs();
+  updateTimerMessage();
+});
 
-const countdownCard = document.querySelector('.countdown-card');
-countdownCard.appendChild(startButton);
+secondsInput.addEventListener('input', () => {
+  stopCountdown();
+  normalizeInputs();
+  updateTimerMessage();
+});
 
+timerForm.addEventListener('submit', startCountdown);
 bgColorInput.addEventListener('input', updateBackground);
 bgImageInput.addEventListener('input', updateBackground);
 overlayColorInput.addEventListener('input', updateBackground);
 
 updateBackground();
-updateTimerDisplay();
-message.textContent = 'Customize the background and set your timer values.';
+normalizeInputs();
+updateTimerMessage();
