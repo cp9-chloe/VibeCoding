@@ -3,42 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Countdown Timer</title>
+  <title>Custom Timer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header>
-      <h1>Countdown Timer</h1>
-      <p>Customize the background and set your target date.</p>
+      <h1>Custom Countdown</h1>
+      <p>Use the buttons below each value to set hours, minutes, and seconds.</p>
     </header>
 
     <section class="countdown-card">
-      <div class="countdown-display" aria-live="polite">
-        <div class="timer-block">
-          <span id="days">00</span>
-          <small>Days</small>
-        </div>
-        <div class="timer-block">
+      <div class="timer-grid" aria-live="polite">
+        <div class="timer-column">
           <span id="hours">00</span>
           <small>Hours</small>
         </div>
-        <div class="timer-block">
+        <div class="timer-column">
           <span id="minutes">00</span>
           <small>Minutes</small>
         </div>
-        <div class="timer-block">
+        <div class="timer-column">
           <span id="seconds">00</span>
           <small>Seconds</small>
         </div>
       </div>
 
-      <form id="settings-form">
-        <div class="field-group">
-          <label for="target-date">Target Date &amp; Time</label>
-          <input type="datetime-local" id="target-date" required />
+      <div class="controls-grid">
+        <div class="control-column">
+          <button type="button" data-unit="hours" data-action="increment">+</button>
+          <button type="button" data-unit="hours" data-action="decrement">−</button>
         </div>
+        <div class="control-column">
+          <button type="button" data-unit="minutes" data-action="increment">+</button>
+          <button type="button" data-unit="minutes" data-action="decrement">−</button>
+        </div>
+        <div class="control-column">
+          <button type="button" data-unit="seconds" data-action="increment">+</button>
+          <button type="button" data-unit="seconds" data-action="decrement">−</button>
+        </div>
+      </div>
 
+      <div class="settings-panel">
         <div class="field-group">
           <label for="bg-color">Background Color</label>
           <input type="color" id="bg-color" value="#102a43" />
@@ -53,13 +59,9 @@
           <label for="overlay-color">Overlay Color</label>
           <input type="color" id="overlay-color" value="#000000" />
         </div>
+      </div>
 
-        <div class="field-group actions">
-          <button type="submit">Start Countdown</button>
-        </div>
-      </form>
-
-      <div class="message" id="message">Pick a future date and customize the background.</div>
+      <div class="message" id="message">Customize the background, then set your time.</div>
     </section>
   </div>
 

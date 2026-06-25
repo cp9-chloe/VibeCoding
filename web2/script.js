@@ -1,14 +1,15 @@
-const targetDateInput = document.getElementById('target-date');
 const bgColorInput = document.getElementById('bg-color');
 const bgImageInput = document.getElementById('bg-image');
 const overlayColorInput = document.getElementById('overlay-color');
-const form = document.getElementById('settings-form');
 const message = document.getElementById('message');
-const daysEl = document.getElementById('days');
 const hoursEl = document.getElementById('hours');
 const minutesEl = document.getElementById('minutes');
 const secondsEl = document.getElementById('seconds');
+const controlButtons = document.querySelectorAll('.control-column button');
 
+let hours = 0;
+let minutes = 0;
+let seconds = 0;
 let countdownInterval = null;
 
 function pad(value) {
@@ -39,67 +40,121 @@ function hexToRgba(hex, alpha = 1) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function updateCountdown() {
-  const targetValue = targetDateInput.value;
-  if (!targetValue) {
-    message.textContent = 'Choose a valid target date to begin countdown.';
-    return;
-  }
-
-  const targetTime = new Date(targetValue).getTime();
-  const now = Date.now();
-  const difference = targetTime - now;
-
-  if (difference <= 0) {
-    clearInterval(countdownInterval);
-    countdownInterval = null;
-    daysEl.textContent = '00';
-    hoursEl.textContent = '00';
-    minutesEl.textContent = '00';
-    secondsEl.textContent = '00';
-    message.textContent = 'Countdown complete!';
-    return;
-  }
-
-  const seconds = Math.floor((difference / 1000) % 60);
-  const minutes = Math.floor((difference / 1000 / 60) % 60);
-  const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-  const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-
-  daysEl.textContent = pad(days);
+function updateTimerDisplay() {
   hoursEl.textContent = pad(hours);
   minutesEl.textContent = pad(minutes);
   secondsEl.textContent = pad(seconds);
-  message.textContent = 'Countdown is running. Customize the background anytime.';
 }
 
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const targetValue = targetDateInput.value;
-  if (!targetValue) {
-    message.textContent = 'Please select a target date and time.';
-    return;
+function normalizeTime() {
+  if (seconds >= 60) {
+    minutes += Math.floor(seconds / 60);
+    seconds %= 60;
+  }
+  if (seconds < 0) {
+    const borrow = Math.ceil(Math.abs(seconds) / 60);
+    minutes -= borrow;
+    seconds += borrow * 60;
   }
 
-  const targetTime = new Date(targetValue).getTime();
-  if (targetTime <= Date.now()) {
-    message.textContent = 'The target date must be in the future.';
-    return;
+  if (minutes >= 60) {
+    hours += Math.floor(minutes / 60);
+    minutes %= 60;
+  }
+  if (minutes < 0) {
+    const borrow = Math.ceil(Math.abs(minutes) / 60);
+    hours -= borrow;
+    minutes += borrow * 60;
   }
 
-  updateBackground();
-  updateCountdown();
+  if (hours < 0) {
+    hours = 0;
+  }
+  if (minutes < 0) {
+    minutes = 0;
+  }
+  if (seconds < 0) {
+    seconds = 0;
+  }
+}
+
+function changeTime(unit, delta) {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+
+  if (unit === 'hours') {
+    hours += delta;
+  }
+  if (unit === 'minutes') {
+    minutes += delta;
+  }
+  if (unit === 'seconds') {
+    seconds += delta;
+  }
+
+  normalizeTime();
+  updateTimerDisplay();
+  message.textContent = 'Time updated. Press any button to continue customizing.';
+}
+
+function startCountdown() {
+  if (hours === 0 && minutes === 0 && seconds === 0) {
+    message.textContent = 'Set a duration before starting the countdown.';
+    return;
+  }
 
   if (countdownInterval) {
     clearInterval(countdownInterval);
   }
 
-  countdownInterval = setInterval(updateCountdown, 1000);
+  countdownInterval = setInterval(() => {
+    if (hours === 0 && minutes === 0 && seconds === 0) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      message.textContent = 'Countdown complete!';
+      return;
+    }
+
+    if (seconds > 0) {
+      seconds -= 1;
+    } else if (minutes > 0) {
+      minutes -= 1;
+      seconds = 59;
+    } else if (hours > 0) {
+      hours -= 1;
+      minutes = 59;
+      seconds = 59;
+    }
+
+    updateTimerDisplay();
+    message.textContent = 'Countdown in progress...';
+  }, 1000);
+}
+
+controlButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const unit = button.dataset.unit;
+    const action = button.dataset.action;
+    const delta = action === 'increment' ? 1 : -1;
+    changeTime(unit, delta);
+  });
 });
+
+const startButton = document.createElement('button');
+startButton.type = 'button';
+startButton.textContent = 'Start Countdown';
+startButton.className = 'start-button';
+startButton.addEventListener('click', startCountdown);
+
+const countdownCard = document.querySelector('.countdown-card');
+countdownCard.appendChild(startButton);
 
 bgColorInput.addEventListener('input', updateBackground);
 bgImageInput.addEventListener('input', updateBackground);
 overlayColorInput.addEventListener('input', updateBackground);
 
 updateBackground();
-message.textContent = 'Pick a future date and customize the background.';
+updateTimerDisplay();
+message.textContent = 'Customize the background and set your timer values.';

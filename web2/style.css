@@ -35,7 +35,7 @@ body {
 }
 
 .app-shell {
-  max-width: 900px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
@@ -51,54 +51,85 @@ header h1 {
 
 header p {
   margin: 0;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .countdown-card {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  backdrop-filter: blur(12px);
-  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  backdrop-filter: blur(16px);
+  padding: 32px;
 }
 
-.countdown-display {
+.timer-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 22px;
+}
+
+.timer-column {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.timer-column span {
+  display: block;
+  font-size: clamp(3rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+.timer-column small {
+  display: block;
+  margin-top: 10px;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
   gap: 18px;
   margin-bottom: 28px;
 }
 
-.timer-block {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+.control-column {
+  display: grid;
+  gap: 12px;
+}
+
+.control-column button {
+  width: 100%;
+  padding: 14px 0;
+  font-size: 1.7rem;
   border-radius: 18px;
-  padding: 20px 12px;
-  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.timer-block span {
-  display: block;
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+.control-column button:hover,
+.control-column button:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
-.timer-block small {
-  display: block;
-  margin-top: 8px;
-  font-size: 0.9rem;
-  opacity: 0.8;
-}
-
-#settings-form {
+.settings-panel {
   display: grid;
   gap: 18px;
 }
 
 .field-group {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .field-group label {
@@ -109,10 +140,10 @@ header p {
 .field-group input {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  padding: 12px 14px;
+  padding: 14px 16px;
   font-size: 1rem;
 }
 
@@ -120,34 +151,15 @@ header p {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.field-group.actions {
-  justify-items: start;
-}
-
-button {
-  border: none;
-  border-radius: 14px;
-  background: #4f8ef7;
-  color: #ffffff;
-  padding: 14px 24px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.25s ease, background 0.25s ease;
-}
-
-button:hover,
-button:focus-visible {
-  background: #66a6ff;
-  transform: translateY(-1px);
-}
-
 .message {
-  margin-top: 18px;
-  opacity: 0.9;
+  margin-top: 24px;
+  opacity: 0.95;
+  text-align: center;
 }
 
-@media (max-width: 650px) {
-  .countdown-display {
-    grid-template-columns: repeat(2, minmax(90px, 1fr));
+@media (max-width: 720px) {
+  .timer-grid,
+  .controls-grid {
+    grid-template-columns: 1fr;
   }
 }
