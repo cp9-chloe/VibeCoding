@@ -1,0 +1,153 @@
+:root {
+  --bg-color: #102a43;
+  --overlay-color: rgba(0, 0, 0, 0.35);
+  --bg-image: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #ffffff;
+  background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  transition: background-color 0.4s ease, background-image 0.4s ease;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: var(--overlay-color);
+  z-index: -1;
+}
+
+body {
+  padding: 24px;
+}
+
+.app-shell {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+header p {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.countdown-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+  padding: 28px;
+}
+
+.countdown-display {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.timer-block {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  padding: 20px 12px;
+  text-align: center;
+}
+
+.timer-block span {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.timer-block small {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+#settings-form {
+  display: grid;
+  gap: 18px;
+}
+
+.field-group {
+  display: grid;
+  gap: 8px;
+}
+
+.field-group label {
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.field-group input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 12px 14px;
+  font-size: 1rem;
+}
+
+.field-group input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.field-group.actions {
+  justify-items: start;
+}
+
+button {
+  border: none;
+  border-radius: 14px;
+  background: #4f8ef7;
+  color: #ffffff;
+  padding: 14px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+button:hover,
+button:focus-visible {
+  background: #66a6ff;
+  transform: translateY(-1px);
+}
+
+.message {
+  margin-top: 18px;
+  opacity: 0.9;
+}
+
+@media (max-width: 650px) {
+  .countdown-display {
+    grid-template-columns: repeat(2, minmax(90px, 1fr));
+  }
+}

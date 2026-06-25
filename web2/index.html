@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Countdown Timer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <h1>Countdown Timer</h1>
+      <p>Customize the background and set your target date.</p>
+    </header>
+
+    <section class="countdown-card">
+      <div class="countdown-display" aria-live="polite">
+        <div class="timer-block">
+          <span id="days">00</span>
+          <small>Days</small>
+        </div>
+        <div class="timer-block">
+          <span id="hours">00</span>
+          <small>Hours</small>
+        </div>
+        <div class="timer-block">
+          <span id="minutes">00</span>
+          <small>Minutes</small>
+        </div>
+        <div class="timer-block">
+          <span id="seconds">00</span>
+          <small>Seconds</small>
+        </div>
+      </div>
+
+      <form id="settings-form">
+        <div class="field-group">
+          <label for="target-date">Target Date &amp; Time</label>
+          <input type="datetime-local" id="target-date" required />
+        </div>
+
+        <div class="field-group">
+          <label for="bg-color">Background Color</label>
+          <input type="color" id="bg-color" value="#102a43" />
+        </div>
+
+        <div class="field-group">
+          <label for="bg-image">Background Image URL</label>
+          <input type="url" id="bg-image" placeholder="https://example.com/image.jpg" />
+        </div>
+
+        <div class="field-group">
+          <label for="overlay-color">Overlay Color</label>
+          <input type="color" id="overlay-color" value="#000000" />
+        </div>
+
+        <div class="field-group actions">
+          <button type="submit">Start Countdown</button>
+        </div>
+      </form>
+
+      <div class="message" id="message">Pick a future date and customize the background.</div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
