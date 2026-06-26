@@ -2,8 +2,9 @@
   --bg-color: #102a43;
   --overlay-color: rgba(0, 0, 0, 0.35);
   --bg-image: none;
-  --editable-bg: rgba(255, 255, 255, 0.08);
-  --editable-input-bg: rgba(255, 255, 255, 0.1);
+  --editable-bg: rgba(255, 255, 255, 0.14);
+  --editable-input-bg: rgba(255, 255, 255, 0.16);
+  --editable-border: rgba(255, 255, 255, 0.24);
 }
 
 * {
@@ -74,10 +75,11 @@ header p {
 
 .timer-column {
   background: var(--editable-bg);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--editable-border);
   border-radius: 24px;
   padding: 24px 16px;
   text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .timer-column input {
@@ -108,6 +110,11 @@ header p {
 .settings-panel {
   display: grid;
   gap: 18px;
+  background: var(--editable-bg);
+  border: 1px solid var(--editable-border);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 .field-group {
   display: grid;
@@ -121,9 +128,9 @@ header p {
 
 .field-group input {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--editable-border);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--editable-input-bg);
   color: #ffffff;
   padding: 14px 16px;
   font-size: 1rem;
@@ -131,6 +138,16 @@ header p {
 
 .field-group input::placeholder {
   color: rgba(255, 255, 255, 0.6);
+}
+
+.field-group small {
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.field-group input:disabled {
+  opacity: 0.9;
+  cursor: default;
 }
 
 .message {

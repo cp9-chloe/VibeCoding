@@ -48,7 +48,8 @@
 
           <div class="field-group">
             <label for="edit-color">Editable Area Color</label>
-            <input type="color" id="edit-color" value="#ffffff" />
+            <input type="color" id="edit-color" value="#ffffff" disabled aria-label="Editable area color" />
+            <small>Automatically uses the opposite color on the wheel from the background.</small>
           </div>
           <div class="field-group actions">
             <button type="submit">Start Countdown</button>
@@ -59,6 +60,11 @@
       <div class="message" id="message">Customize the background and set your timer values.</div>
     </section>
   </div>
+
+  <audio id="doorbell-sound" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/phone_ring.ogg" type="audio/ogg" />
+    <source src="https://actions.google.com/sounds/v1/alarms/phone_ring.mp3" type="audio/mpeg" />
+  </audio>
 
   <script src="script.js"></script>
 </body>

@@ -7,15 +7,35 @@ const bgImageInput = document.getElementById('bg-image');
 const overlayColorInput = document.getElementById('overlay-color');
 const editColorInput = document.getElementById('edit-color');
 const message = document.getElementById('message');
+const doorbellSound = document.getElementById('doorbell-sound');
 const hoursEl = document.getElementById('hours-input');
 const minutesEl = document.getElementById('minutes-input');
 const secondsEl = document.getElementById('seconds-input');
 
 let remainingSeconds = 0;
 let countdownInterval = null;
+let currentBackgroundColor = null;
 
 function pad(value) {
   return String(value).padStart(2, '0');
+}
+
+function setBackgroundColor(color) {
+  currentBackgroundColor = color;
+  document.documentElement.style.setProperty('--bg-color', color);
+}
+
+function getRandomBackgroundColor() {
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = 0.6 + Math.random() * 0.2;
+  const lightness = 0.3 + Math.random() * 0.25;
+  const candidate = hslToHex(hue, saturation, lightness);
+
+  if (currentBackgroundColor && candidate.toLowerCase() === currentBackgroundColor.toLowerCase()) {
+    return getRandomBackgroundColor();
+  }
+
+  return candidate;
 }
 
 function updateBackground() {
@@ -23,7 +43,7 @@ function updateBackground() {
   const imageUrl = bgImageInput.value.trim();
   const overlay = overlayColorInput.value;
 
-  document.documentElement.style.setProperty('--bg-color', color);
+  setBackgroundColor(color);
   document.documentElement.style.setProperty('--overlay-color', hexToRgba(overlay, 0.35));
 
   if (imageUrl) {
@@ -31,23 +51,111 @@ function updateBackground() {
   } else {
     document.documentElement.style.setProperty('--bg-image', 'none');
   }
+
+  updateEditableColor();
+}
+
+function hexToRgb(hex) {
+  const normalized = hex.replace('#', '');
+  const bigint = parseInt(normalized, 16);
+  return {
+    r: (bigint >> 16) & 255,
+    g: (bigint >> 8) & 255,
+    b: bigint & 255,
+  };
+}
+
+function rgbToHex(r, g, b) {
+  return `#${[r, g, b]
+    .map((value) => Math.max(0, Math.min(255, value)).toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+
+function hexToHsl(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  const rNorm = r / 255;
+  const gNorm = g / 255;
+  const bNorm = b / 255;
+  const max = Math.max(rNorm, gNorm, bNorm);
+  const min = Math.min(rNorm, gNorm, bNorm);
+  const delta = max - min;
+
+  let h = 0;
+  const l = (max + min) / 2;
+  const s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+
+  if (delta !== 0) {
+    switch (max) {
+      case rNorm:
+        h = 60 * (((gNorm - bNorm) / delta) % 6);
+        break;
+      case gNorm:
+        h = 60 * (((bNorm - rNorm) / delta) + 2);
+        break;
+      default:
+        h = 60 * (((rNorm - gNorm) / delta) + 4);
+        break;
+    }
+  }
+
+  return { h: (h + 360) % 360, s, l };
+}
+
+function hslToHex(h, s, l) {
+  const hue = ((h % 360) + 360) % 360;
+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
+  const huePrime = hue / 60;
+  const x = chroma * (1 - Math.abs((huePrime % 2) - 1));
+  let r = 0;
+  let g = 0;
+  let b = 0;
+
+  if (huePrime >= 0 && huePrime < 1) {
+    r = chroma;
+    g = x;
+  } else if (huePrime < 2) {
+    r = x;
+    g = chroma;
+  } else if (huePrime < 3) {
+    g = chroma;
+    b = x;
+  } else if (huePrime < 4) {
+    g = x;
+    b = chroma;
+  } else if (huePrime < 5) {
+    r = x;
+    b = chroma;
+  } else {
+    r = chroma;
+    b = x;
+  }
+
+  const match = l - chroma / 2;
+  return rgbToHex(
+    Math.round((r + match) * 255),
+    Math.round((g + match) * 255),
+    Math.round((b + match) * 255),
+  );
+}
+
+function getComplementaryColor(hex) {
+  const { h, s, l } = hexToHsl(hex);
+  return hslToHex((h + 180) % 360, s, l);
 }
 
 function hexToRgba(hex, alpha = 1) {
-  const normalized = hex.replace('#', '');
-  const bigint = parseInt(normalized, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
+  const { r, g, b } = hexToRgb(hex);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function updateEditableColor() {
-  const hex = editColorInput.value;
-  // column/background for editable area a bit more translucent
-  document.documentElement.style.setProperty('--editable-bg', hexToRgba(hex, 0.12));
-  // inputs slightly less translucent
-  document.documentElement.style.setProperty('--editable-input-bg', hexToRgba(hex, 0.10));
+  const baseHex = bgColorInput.value;
+  const complementaryHex = getComplementaryColor(baseHex);
+  editColorInput.value = complementaryHex;
+
+  document.documentElement.style.setProperty('--editable-bg', hexToRgba(complementaryHex, 0.20));
+  document.documentElement.style.setProperty('--editable-input-bg', hexToRgba(complementaryHex, 0.16));
+  document.documentElement.style.setProperty('--editable-border', hexToRgba(complementaryHex, 0.36));
 }
 
 function getInputValue(input, max) {
@@ -114,16 +222,23 @@ function startCountdown(event) {
     clearInterval(countdownInterval);
   }
 
+  setBackgroundColor(bgColorInput.value);
+
   countdownInterval = setInterval(() => {
     if (remainingSeconds <= 0) {
       clearInterval(countdownInterval);
       countdownInterval = null;
       message.textContent = 'Countdown complete!';
+      if (doorbellSound) {
+        doorbellSound.currentTime = 0;
+        doorbellSound.play().catch(() => {});
+      }
       return;
     }
 
     remainingSeconds -= 1;
     setTimerFromSeconds(remainingSeconds);
+    setBackgroundColor(getRandomBackgroundColor());
     message.textContent = 'Countdown is running...';
   }, 1000);
 }
@@ -157,7 +272,6 @@ timerForm.addEventListener('submit', startCountdown);
 bgColorInput.addEventListener('input', updateBackground);
 bgImageInput.addEventListener('input', updateBackground);
 overlayColorInput.addEventListener('input', updateBackground);
-editColorInput.addEventListener('input', updateEditableColor);
 
 updateBackground();
 updateEditableColor();
