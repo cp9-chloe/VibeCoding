@@ -2,6 +2,8 @@
   --bg-color: #102a43;
   --overlay-color: rgba(0, 0, 0, 0.35);
   --bg-image: none;
+  --editable-bg: rgba(255, 255, 255, 0.08);
+  --editable-input-bg: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -71,7 +73,7 @@ header p {
 }
 
 .timer-column {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--editable-bg);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 24px;
   padding: 24px 16px;
@@ -82,7 +84,7 @@ header p {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--editable-input-bg);
   color: #ffffff;
   padding: 18px 0;
   font-size: 2.6rem;

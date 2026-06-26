@@ -5,6 +5,7 @@ const secondsInput = document.getElementById('seconds-input');
 const bgColorInput = document.getElementById('bg-color');
 const bgImageInput = document.getElementById('bg-image');
 const overlayColorInput = document.getElementById('overlay-color');
+const editColorInput = document.getElementById('edit-color');
 const message = document.getElementById('message');
 const hoursEl = document.getElementById('hours-input');
 const minutesEl = document.getElementById('minutes-input');
@@ -39,6 +40,14 @@ function hexToRgba(hex, alpha = 1) {
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function updateEditableColor() {
+  const hex = editColorInput.value;
+  // column/background for editable area a bit more translucent
+  document.documentElement.style.setProperty('--editable-bg', hexToRgba(hex, 0.12));
+  // inputs slightly less translucent
+  document.documentElement.style.setProperty('--editable-input-bg', hexToRgba(hex, 0.10));
 }
 
 function getInputValue(input, max) {
@@ -148,7 +157,9 @@ timerForm.addEventListener('submit', startCountdown);
 bgColorInput.addEventListener('input', updateBackground);
 bgImageInput.addEventListener('input', updateBackground);
 overlayColorInput.addEventListener('input', updateBackground);
+editColorInput.addEventListener('input', updateEditableColor);
 
 updateBackground();
+updateEditableColor();
 normalizeInputs();
 updateTimerMessage();
