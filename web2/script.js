@@ -179,40 +179,50 @@ function ensureAudioContext() {
 }
 
 function playCompletionBeep() {
+  const playFallbackBeep = () => {
+    const context = ensureAudioContext();
+    if (!context) {
+      return;
+    }
+
+    const sequence = [880, 660, 880, 660];
+    const gap = 0.3;
+    const beepLength = 0.22;
+
+    sequence.forEach((frequency, index) => {
+      const startTime = context.currentTime + index * gap;
+      const endTime = startTime + beepLength;
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+
+      oscillator.type = 'square';
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+
+      gainNode.gain.setValueAtTime(0.0001, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.16, startTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+
+      oscillator.start(startTime);
+      oscillator.stop(endTime + 0.01);
+    });
+  };
+
   if (completionSound) {
     completionSound.currentTime = 0;
-    completionSound.play().catch(() => {});
-    return;
+    const playPromise = completionSound.play();
+
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise.then(() => {}).catch(() => {
+        playFallbackBeep();
+      });
+      return;
+    }
   }
 
-  const context = ensureAudioContext();
-  if (!context) {
-    return;
-  }
-
-  const sequence = [880, 660, 880, 660];
-  const gap = 0.3;
-  const beepLength = 0.22;
-
-  sequence.forEach((frequency, index) => {
-    const startTime = context.currentTime + index * gap;
-    const endTime = startTime + beepLength;
-    const oscillator = context.createOscillator();
-    const gainNode = context.createGain();
-
-    oscillator.type = 'square';
-    oscillator.frequency.setValueAtTime(frequency, startTime);
-
-    gainNode.gain.setValueAtTime(0.0001, startTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.16, startTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, endTime);
-
-    oscillator.connect(gainNode);
-    gainNode.connect(context.destination);
-
-    oscillator.start(startTime);
-    oscillator.stop(endTime + 0.01);
-  });
+  playFallbackBeep();
 }
 
 function getInputValue(input, max) {
