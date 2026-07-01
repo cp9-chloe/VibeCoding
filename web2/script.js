@@ -5,7 +5,6 @@ const secondsInput = document.getElementById('seconds-input');
 const bgColorInput = document.getElementById('bg-color');
 const bgImageInput = document.getElementById('bg-image');
 const overlayColorInput = document.getElementById('overlay-color');
-const editColorInput = document.getElementById('edit-color');
 const message = document.getElementById('message');
 const doorbellSound = document.getElementById('doorbell-sound');
 const hoursEl = document.getElementById('hours-input');
@@ -151,7 +150,10 @@ function hexToRgba(hex, alpha = 1) {
 function updateEditableColor() {
   const baseHex = bgColorInput.value;
   const complementaryHex = getComplementaryColor(baseHex);
-  editColorInput.value = complementaryHex;
+
+  if (document.getElementById('edit-color')) {
+    document.getElementById('edit-color').value = complementaryHex;
+  }
 
   document.documentElement.style.setProperty('--editable-bg', hexToRgba(complementaryHex, 0.20));
   document.documentElement.style.setProperty('--editable-input-bg', hexToRgba(complementaryHex, 0.16));
