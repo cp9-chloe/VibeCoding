@@ -6,7 +6,7 @@ const bgColorInput = document.getElementById('bg-color');
 const bgImageInput = document.getElementById('bg-image');
 const overlayColorInput = document.getElementById('overlay-color');
 const message = document.getElementById('message');
-const doorbellSound = document.getElementById('doorbell-sound');
+const completionSound = document.getElementById('completion-sound');
 const hoursEl = document.getElementById('hours-input');
 const minutesEl = document.getElementById('minutes-input');
 const secondsEl = document.getElementById('seconds-input');
@@ -14,6 +14,7 @@ const secondsEl = document.getElementById('seconds-input');
 let remainingSeconds = 0;
 let countdownInterval = null;
 let currentBackgroundColor = null;
+let audioContext = null;
 
 function pad(value) {
   return String(value).padStart(2, '0');
@@ -160,6 +161,60 @@ function updateEditableColor() {
   document.documentElement.style.setProperty('--editable-border', hexToRgba(complementaryHex, 0.36));
 }
 
+function ensureAudioContext() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) {
+    return null;
+  }
+
+  if (!audioContext) {
+    audioContext = new AudioContextClass();
+  }
+
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+
+  return audioContext;
+}
+
+function playCompletionBeep() {
+  if (completionSound) {
+    completionSound.currentTime = 0;
+    completionSound.play().catch(() => {});
+    return;
+  }
+
+  const context = ensureAudioContext();
+  if (!context) {
+    return;
+  }
+
+  const sequence = [880, 660, 880, 660];
+  const gap = 0.3;
+  const beepLength = 0.22;
+
+  sequence.forEach((frequency, index) => {
+    const startTime = context.currentTime + index * gap;
+    const endTime = startTime + beepLength;
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+
+    oscillator.type = 'square';
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+
+    gainNode.gain.setValueAtTime(0.0001, startTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.16, startTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    oscillator.start(startTime);
+    oscillator.stop(endTime + 0.01);
+  });
+}
+
 function getInputValue(input, max) {
   const value = Number(input.value);
   if (Number.isNaN(value) || value < 0) {
@@ -193,6 +248,8 @@ function updateTimerMessage() {
   const hours = getInputValue(hoursInput);
   const minutes = getInputValue(minutesInput, 59);
   const seconds = getInputValue(secondsInput, 59);
+
+  message.classList.remove('is-complete');
 
   if (countdownInterval) {
     message.textContent = 'Countdown is running...';
@@ -231,10 +288,8 @@ function startCountdown(event) {
       clearInterval(countdownInterval);
       countdownInterval = null;
       message.textContent = 'Countdown complete!';
-      if (doorbellSound) {
-        doorbellSound.currentTime = 0;
-        doorbellSound.play().catch(() => {});
-      }
+      message.classList.add('is-complete');
+      playCompletionBeep();
       return;
     }
 

@@ -154,6 +154,24 @@ header p {
   margin-top: 24px;
   opacity: 0.95;
   text-align: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.message.is-complete {
+  animation: message-pulse 0.8s ease-in-out 2;
+  transform: scale(1.02);
+}
+
+@keyframes message-pulse {
+  0%,
+  100% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
 }
 
 @media (max-width: 720px) {
