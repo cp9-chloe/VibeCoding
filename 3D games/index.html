@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Low Poly Island FPS</title>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #111827;
+        color: white;
+        font-family: Arial, sans-serif;
+      }
+      #game {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .hint {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(0, 0, 0, 0.45);
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <div class="hint">WASD to move • Mouse to look</div>
+
+    <script type="module">
+      import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+      const canvas = document.getElementById('game');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x87ceeb);
+      scene.fog = new THREE.Fog(0x87ceeb, 40, 140);
+
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 300);
+      camera.position.set(0, 3.2, 8);
+
+      const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambient);
+      const sun = new THREE.DirectionalLight(0xffffff, 1.1);
+      sun.position.set(20, 30, 10);
+      scene.add(sun);
+
+      // Island
+      const island = new THREE.Group();
+      scene.add(island);
+
+      const groundGeo = new THREE.BoxGeometry(60, 2, 60);
+      const groundMat = new THREE.MeshStandardMaterial({ color: 0x4caf50, roughness: 1 });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.position.y = -1;
+      island.add(ground);
+
+      const palmGroup = new THREE.Group();
+      island.add(palmGroup);
+
+      for (let i = 0; i < 12; i += 1) {
+        const palm = new THREE.Group();
+        const trunk = new THREE.Mesh(
+          new THREE.BoxGeometry(0.5, 6, 0.5),
+          new THREE.MeshStandardMaterial({ color: 0x8d6e63 })
+        );
+        trunk.position.y = 3;
+        palm.add(trunk);
+
+        const leaves = new THREE.Mesh(
+          new THREE.ConeGeometry(2.4, 4, 4),
+          new THREE.MeshStandardMaterial({ color: 0x2e7d32 })
+        );
+        leaves.position.y = 6.2;
+        palm.add(leaves);
+
+        palm.position.set((Math.random() - 0.5) * 45, 0, (Math.random() - 0.5) * 45);
+        palmGroup.add(palm);
+      }
+
+      const rockGeo = new THREE.BoxGeometry(2.5, 2, 2.5);
+      const rockMat = new THREE.MeshStandardMaterial({ color: 0x9e9e9e });
+      for (let i = 0; i < 10; i += 1) {
+        const rock = new THREE.Mesh(rockGeo, rockMat);
+        rock.position.set((Math.random() - 0.5) * 48, 0.7, (Math.random() - 0.5) * 48);
+        rock.scale.setScalar(0.8 + Math.random() * 0.7);
+        island.add(rock);
+      }
+
+      const water = new THREE.Mesh(
+        new THREE.PlaneGeometry(200, 200),
+        new THREE.MeshStandardMaterial({ color: 0x1d4ed8, transparent: true, opacity: 0.75 })
+      );
+      water.rotation.x = -Math.PI / 2;
+      water.position.y = -1.2;
+      scene.add(water);
+
+      // Player controls
+      const velocity = new THREE.Vector3();
+      const direction = new THREE.Vector3();
+      const yaw = new THREE.Vector3(0, 0, 0);
+      const moveSpeed = 10;
+      const mouseSensitivity = 0.002;
+
+      let moveForward = false;
+      let moveBackward = false;
+      let moveLeft = false;
+      let moveRight = false;
+
+      const pointer = { x: 0, y: 0 };
+      document.addEventListener('pointerlockchange', () => {
+        if (document.pointerLockElement === canvas) {
+          document.body.style.cursor = 'none';
+        } else {
+          document.body.style.cursor = 'default';
+        }
+      });
+      canvas.addEventListener('click', () => canvas.requestPointerLock());
+
+      document.addEventListener('mousemove', (event) => {
+        if (document.pointerLockElement !== canvas) return;
+        pointer.x -= event.movementX * mouseSensitivity;
+        pointer.y -= event.movementY * mouseSensitivity;
+        pointer.y = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pointer.y));
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'w' || event.key === 'W') moveForward = true;
+        if (event.key === 's' || event.key === 'S') moveBackward = true;
+        if (event.key === 'a' || event.key === 'A') moveLeft = true;
+        if (event.key === 'd' || event.key === 'D') moveRight = true;
+      });
+
+      document.addEventListener('keyup', (event) => {
+        if (event.key === 'w' || event.key === 'W') moveForward = false;
+        if (event.key === 's' || event.key === 'S') moveBackward = false;
+        if (event.key === 'a' || event.key === 'A') moveLeft = false;
+        if (event.key === 'd' || event.key === 'D') moveRight = false;
+      });
+
+      const clock = new THREE.Clock();
+
+      function animate() {
+        const delta = clock.getDelta();
+        direction.set(0, 0, 0);
+        if (moveForward) direction.z -= 1;
+        if (moveBackward) direction.z += 1;
+        if (moveLeft) direction.x -= 1;
+        if (moveRight) direction.x += 1;
+        direction.normalize();
+
+        const yawQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), pointer.x);
+        const pitchQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pointer.y);
+        const lookQuat = new THREE.Quaternion().multiplyQuaternions(yawQuat, pitchQuat);
+        camera.quaternion.copy(lookQuat);
+
+        velocity.set(0, 0, 0);
+        velocity.add(direction.clone().applyQuaternion(yawQuat).multiplyScalar(moveSpeed * delta));
+        camera.position.add(velocity);
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+    </script>
+  </body>
+</html>
