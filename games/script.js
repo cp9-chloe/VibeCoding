@@ -1,7 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const overlay = document.getElementById('overlay');
-const startButton = document.getElementById('startButton');
 
 const GRAVITY = 0.42;
 const FLAP = -5.7;
@@ -172,4 +171,4 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
-startButton.addEventListener('click', startGame);
+startGame();
