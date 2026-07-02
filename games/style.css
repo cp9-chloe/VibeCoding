@@ -1,6 +1,6 @@
 :root {
   color-scheme: dark;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 * {
@@ -12,32 +12,21 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at top, #1d4ed8, #020617 70%);
-  color: white;
+  background: linear-gradient(135deg, #87ceeb, #4f46e5);
 }
 
-.game-shell {
+.game-wrapper {
   position: relative;
-  width: min(92vw, 520px);
-}
-
-.hud {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-size: 0.9rem;
+  width: min(92vw, 420px);
 }
 
 canvas {
   width: 100%;
   height: auto;
-  border-radius: 20px;
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
-  background: #0f172a;
-  border: 3px solid rgba(255, 255, 255, 0.16);
+  display: block;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, #87ceeb 0%, #cdeffd 55%, #8ddf6a 55%, #7cb342 100%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
 }
 
 .overlay {
@@ -45,64 +34,26 @@ canvas {
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  color: white;
   text-align: center;
-  padding: 24px;
-  border-radius: 20px;
-  background: rgba(2, 6, 23, 0.82);
-  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 20px;
 }
 
 .overlay.hidden {
   display: none;
 }
 
-h1,
-h2 {
-  margin: 0 0 10px;
-}
-
-p {
-  margin: 0 0 18px;
-  color: #cbd5e1;
-}
-
-.difficulty-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.mode-btn,
-.primary-btn {
+button {
+  margin-top: 12px;
   border: none;
+  padding: 10px 18px;
   border-radius: 999px;
-  padding: 10px 16px;
-  font-size: 0.95rem;
+  background: #ff6b6b;
+  color: white;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.mode-btn {
-  background: rgba(255, 255, 255, 0.16);
-  color: white;
-}
-
-.mode-btn.active {
-  background: #38bdf8;
-}
-
-.primary-btn {
-  background: linear-gradient(135deg, #38bdf8, #818cf8);
-  color: white;
-  min-width: 140px;
-}
-
-.mode-btn:hover,
-.primary-btn:hover {
-  transform: translateY(-2px);
 }

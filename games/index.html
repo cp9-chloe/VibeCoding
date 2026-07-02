@@ -3,35 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Geometry Dash Lite</title>
+    <title>Flappy Bird</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="game-shell">
-      <div class="hud">
-        <div>Attempts: <span id="attempts">0</span></div>
-        <div>Difficulty: <span id="difficulty-label">Easy</span></div>
-      </div>
-
-      <canvas id="gameCanvas" width="480" height="720"></canvas>
-
-      <div id="menu" class="overlay">
-        <h1>Geometry Dash Lite</h1>
-        <p>Jump over the spikes and survive as long as you can.</p>
-
-        <div class="difficulty-row">
-          <button class="mode-btn active" data-mode="easy">Easy</button>
-          <button class="mode-btn" data-mode="medium">Medium</button>
-          <button class="mode-btn" data-mode="hard">Hard</button>
-        </div>
-
-        <button id="startBtn" class="primary-btn">Start Game</button>
-      </div>
-
-      <div id="gameOver" class="overlay hidden">
-        <h2>You Died</h2>
-        <p id="gameOverText">Try again and beat your best.</p>
-        <button id="restartBtn" class="primary-btn">Play Again</button>
+    <div class="game-wrapper">
+      <canvas id="gameCanvas" width="420" height="620"></canvas>
+      <div class="overlay" id="overlay">
+        <h1>Flappy Bird</h1>
+        <p>Press space to flap and avoid the pipes.</p>
+        <button id="startButton">Start Game</button>
       </div>
     </div>
 
