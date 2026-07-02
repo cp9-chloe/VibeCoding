@@ -8,6 +8,7 @@ const FLAP = -5.7;
 const PIPE_WIDTH = 64;
 const PIPE_GAP = 150;
 const GROUND_HEIGHT = 70;
+const PIPE_SPEED = 3.2;
 
 let bird;
 let pipes = [];
@@ -33,7 +34,11 @@ function resetGame() {
 }
 
 function startGame() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+  }
   resetGame();
+  draw();
   animationId = requestAnimationFrame(loop);
 }
 
@@ -62,10 +67,11 @@ function update(delta) {
 
   for (let i = pipes.length - 1; i >= 0; i -= 1) {
     const pipe = pipes[i];
-    pipe.x -= 3.2 * delta;
+    pipe.x -= PIPE_SPEED * delta;
 
     if (pipe.x + PIPE_WIDTH < 0) {
       pipes.splice(i, 1);
+      continue;
     }
 
     if (pipe.x + PIPE_WIDTH < bird.x && !pipe.scored) {
@@ -104,14 +110,13 @@ function checkCollision(bird, pipe) {
   const birdTop = bird.y - bird.radius;
   const birdBottom = bird.y + bird.radius;
 
-  const pipeTopBottom = pipe.topHeight;
-  const pipeBottomTop = pipe.topHeight + pipe.gap;
-
   const pipeRectLeft = pipe.x;
   const pipeRectRight = pipe.x + PIPE_WIDTH;
+  const topBottom = pipe.topHeight;
+  const bottomTop = pipe.topHeight + pipe.gap;
 
-  const hitsTop = birdRight > pipeRectLeft && birdLeft < pipeRectRight && birdTop < pipeTopBottom;
-  const hitsBottom = birdRight > pipeRectLeft && birdLeft < pipeRectRight && birdBottom > pipeBottomTop;
+  const hitsTop = birdRight > pipeRectLeft && birdLeft < pipeRectRight && birdTop < topBottom;
+  const hitsBottom = birdRight > pipeRectLeft && birdLeft < pipeRectRight && birdBottom > bottomTop;
 
   return hitsTop || hitsBottom;
 }
@@ -131,7 +136,10 @@ function endGame() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = '#87ceeb';
+  const sky = ctx.createLinearGradient(0, 0, 0, canvas.height - GROUND_HEIGHT);
+  sky.addColorStop(0, '#7dd3fc');
+  sky.addColorStop(1, '#e0f2fe');
+  ctx.fillStyle = sky;
   ctx.fillRect(0, 0, canvas.width, canvas.height - GROUND_HEIGHT);
 
   ctx.fillStyle = '#8ddf6a';
@@ -139,14 +147,14 @@ function draw() {
 
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 24px Arial';
-  ctx.fillText(`Score: ${score}`, canvas.width - 120, 32);
+  ctx.fillText(`Score: ${score}`, canvas.width - 115, 32);
 
-  ctx.fillStyle = '#ffdf00';
+  ctx.fillStyle = '#ffcc00';
   ctx.beginPath();
   ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = '#3a7d44';
+  ctx.fillStyle = '#3f7d20';
   pipes.forEach((pipe) => {
     ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.topHeight);
     ctx.fillRect(pipe.x, pipe.topHeight + pipe.gap, PIPE_WIDTH, canvas.height - GROUND_HEIGHT - (pipe.topHeight + pipe.gap));
