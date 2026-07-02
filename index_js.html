@@ -80,7 +80,7 @@
         button.textContent = `Open ${project.name}`;
 
         button.addEventListener('click', () => {
-          window.open(project.url, '_blank', 'noopener,noreferrer');
+          window.location.href = project.url;
         });
 
         button.style.animationDelay = `${index * 0.1}s`;
