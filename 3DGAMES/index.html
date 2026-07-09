@@ -117,8 +117,16 @@
     }
 
     function riverAt(x, z) {
-      const centerX = Math.sin(z / 18) * 8 + z * 0.015;
-      return Math.abs(x - centerX) < 6.5;
+      const riverBands = [];
+      for (let i = 0; i < 8; i++) {
+        const seed = (i + 1) * 31.5;
+        const centerX = Math.sin((z + seed) / (16 + i)) * (4 + i * 1.2) + (z * 0.012) + seed * 0.002;
+        const width = 2.5 + (i % 3) * 1.2;
+        if (Math.abs(x - centerX) < width) {
+          riverBands.push(true);
+        }
+      }
+      return riverBands.some(Boolean);
     }
 
     function createChunk(cx, cz) {
