@@ -82,15 +82,15 @@
     const look = { yaw: 0, pitch: 0 };
     const player = {
       x: 0,
-      y: 1.6,
+      y: 1.2,
       z: 0,
       vx: 0,
       vz: 0,
       vy: 0,
       onGround: true,
       height: 1.8,
-      speed: 4.5,
-      jumpVel: 6.5
+      speed: 50,
+      jumpVel: 9.5
     };
 
     const world = {
@@ -161,6 +161,11 @@
       return best;
     }
 
+    function getGroundHeight(x, z) {
+      const base = worldHeightAt(x, z) * world.scale * 0.16 + 0.2;
+      return base;
+    }
+
     function updatePlayer(dt) {
       const forward = {
         x: Math.sin(look.yaw),
@@ -188,26 +193,20 @@
       player.x += player.vx * dt;
       player.z += player.vz * dt;
 
-      const groundY = worldHeightAt(player.x, player.z) * world.scale * 0.16 + 0.2;
-      if (player.y <= groundY) {
-        player.y = groundY;
-        player.onGround = true;
-        player.vy = 0;
-      } else {
-        player.onGround = false;
-      }
-
+      const groundY = getGroundHeight(player.x, player.z);
       if (keys[' '] && player.onGround) {
         player.vy = player.jumpVel;
         player.onGround = false;
       }
-      player.vy -= 9.8 * dt * 0.3;
+      player.vy -= 9.8 * dt * 0.55;
       player.y += player.vy * dt;
 
       if (player.y < groundY) {
         player.y = groundY;
         player.vy = 0;
         player.onGround = true;
+      } else {
+        player.onGround = false;
       }
     }
 
@@ -228,18 +227,18 @@
       ctx.clearRect(0, 0, w, h);
 
       const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#76d7ff');
-      sky.addColorStop(0.55, '#4cae73');
-      sky.addColorStop(1, '#112815');
+      sky.addColorStop(0, '#88d7ff');
+      sky.addColorStop(0.6, '#63b57d');
+      sky.addColorStop(1, '#0f2418');
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, w, h);
 
       ctx.save();
-      ctx.translate(w / 2, h / 2);
-      ctx.scale(1, 0.6);
-      ctx.fillStyle = 'rgba(255,255,255,0.14)';
+      ctx.translate(w * 0.5, h * 0.75);
+      ctx.scale(1, 0.45);
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
       ctx.beginPath();
-      ctx.arc(0, -h * 0.18, 180, 0, Math.PI * 2);
+      ctx.arc(0, -h * 0.2, 220, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
@@ -252,20 +251,27 @@
       for (let x = startX; x <= endX; x++) {
         for (let z = startZ; z <= endZ; z++) {
           const ground = worldHeightAt(x, z);
-          const y = ground * world.scale * 0.16 + 0.2;
           const dx = x - player.x;
           const dz = z - player.z;
           const dist = Math.hypot(dx, dz);
           if (dist > 24) continue;
-          const screenX = (dx / (dist + 0.001)) * 220 + w * 0.5;
-          const screenY = (dz / (dist + 0.001)) * 220 + h * 0.5;
-          const base = Math.max(0, 400 - dist * 18);
-          ctx.fillStyle = `rgb(70, ${120 + ground * 8}, 45)`;
-          ctx.fillRect(screenX - 4, h - 70 - ground * 4, 8, 8 + ground * 4);
-          ctx.fillRect(screenX - 16, h - 60 - ground * 4, 32, 8 + ground * 4);
+          const baseY = getGroundHeight(x, z);
+          const screenX = (dx / (dist + 0.001)) * 260 + w * 0.5;
+          const screenY = (dz / (dist + 0.001)) * 260 + h * 0.5;
+          const height = Math.max(16, 80 - dist * 3 + ground * 4);
+          ctx.fillStyle = `rgb(60, ${120 + ground * 8}, 40)`;
+          ctx.beginPath();
+          ctx.moveTo(screenX - 10, h - 70 - height * 0.28);
+          ctx.lineTo(screenX + 10, h - 70 - height * 0.28);
+          ctx.lineTo(screenX + 16, h - 70 + 10);
+          ctx.lineTo(screenX - 16, h - 70 + 10);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = '#4c8f4a';
+          ctx.fillRect(screenX - 14, h - 70 + 10, 28, 10);
           if (ground > 0) {
-            ctx.fillStyle = '#3c8b46';
-            ctx.fillRect(screenX - 10, h - 80 - ground * 4, 20, 10);
+            ctx.fillStyle = '#3b6b35';
+            ctx.fillRect(screenX - 12, h - 70 + 8, 24, 4);
           }
         }
       }
@@ -275,14 +281,20 @@
         const dz = tree.z - player.z;
         const dist = Math.hypot(dx, dz);
         if (dist > 24) continue;
-        const screenX = (dx / (dist + 0.001)) * 220 + w * 0.5;
-        const screenY = (dz / (dist + 0.001)) * 220 + h * 0.5;
-        const trunkHeight = 20 + (tree.x + tree.z) % 3;
+        const screenX = (dx / (dist + 0.001)) * 260 + w * 0.5;
+        const screenY = (dz / (dist + 0.001)) * 260 + h * 0.5;
+        const trunkHeight = 18 + (tree.x + tree.z) % 6;
         ctx.fillStyle = '#6a3d16';
-        ctx.fillRect(screenX - 3, h - 60 - trunkHeight, 6, trunkHeight);
-        ctx.fillStyle = '#2d7a2f';
+        ctx.fillRect(screenX - 4, h - 58 - trunkHeight, 8, trunkHeight);
+        ctx.fillStyle = '#2f7c33';
         ctx.beginPath();
-        ctx.arc(screenX, h - 70 - trunkHeight, 15, 0, Math.PI * 2);
+        ctx.arc(screenX, h - 68 - trunkHeight, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(screenX - 8, h - 74 - trunkHeight, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(screenX + 8, h - 74 - trunkHeight, 12, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -291,13 +303,16 @@
         const dz = animal.z - player.z;
         const dist = Math.hypot(dx, dz);
         if (dist > 24) continue;
-        const screenX = (dx / (dist + 0.001)) * 220 + w * 0.5;
-        const screenY = (dz / (dist + 0.001)) * 220 + h * 0.5;
-        ctx.fillStyle = animal.type === 'parrot' ? '#ff9f1c' : animal.type === 'monkey' ? '#5a3b1b' : animal.type === 'deer' ? '#d1c1a2' : '#6f3d1b';
-        ctx.fillRect(screenX - 8, h - 70 + Math.sin(Date.now() * 0.002 + animal.wobble) * 2, 16, 12);
+        const screenX = (dx / (dist + 0.001)) * 260 + w * 0.5;
+        const screenY = (dz / (dist + 0.001)) * 260 + h * 0.5;
+        const bob = Math.sin(Date.now() * 0.002 + animal.wobble) * 2;
+        ctx.fillStyle = animal.type === 'parrot' ? '#ffb347' : animal.type === 'monkey' ? '#5d3b1a' : animal.type === 'deer' ? '#d8c29a' : '#6e3f1d';
+        ctx.beginPath();
+        ctx.arc(screenX, h - 70 + bob, 8, 0, Math.PI * 2);
+        ctx.fill();
       }
 
-      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
       ctx.fillRect(w * 0.5 - 2, h * 0.5 - 18, 4, 36);
       ctx.fillRect(w * 0.5 - 18, h * 0.5 - 2, 36, 4);
     }
