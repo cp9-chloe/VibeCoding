@@ -267,8 +267,8 @@
     }
 
     function updatePlayer(dt) {
-      const forward = new THREE.Vector3(Math.sin(mouse.yaw), 0, Math.cos(mouse.yaw));
-      const right = new THREE.Vector3(Math.cos(mouse.yaw), 0, -Math.sin(mouse.yaw));
+      const forward = new THREE.Vector3(Math.sin(mouse.yaw), 0, -Math.cos(mouse.yaw));
+      const right = new THREE.Vector3(Math.cos(mouse.yaw), 0, Math.sin(mouse.yaw));
       const move = new THREE.Vector3();
 
       if (keys['KeyW']) move.add(forward);
