@@ -24,7 +24,7 @@
   <div id="overlay">
     <div class="panel">
       <h1>Low-Poly Explorer</h1>
-      <p>WASD to move • Mouse to look around</p>
+      <p>W/S to move • Space to jump • Mouse to look around</p>
     </div>
   </div>
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
@@ -45,13 +45,18 @@
     const mouse = { sensitivity: 0.002, yaw: 0, pitch: 0 };
 
     const player = {
+      position: new THREE.Vector3(0, 1.8, 0),
       velocity: new THREE.Vector3(),
-      speed: 8,
+      speed: 7.5,
       height: 1.8,
-      grounded: true
+      grounded: true,
+      jumpForce: 8.3,
+      gravity: 22
     };
 
     const worldRadius = 80;
+    const colliders = [];
+
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(worldRadius * 2, worldRadius * 2, 80, 80),
       new THREE.MeshStandardMaterial({ color: 0x4f9a3f, roughness: 1 })
@@ -85,6 +90,7 @@
 
       group.position.set(x, 0, z);
       scene.add(group);
+      colliders.push({ x, z, width: 0.7, depth: 0.7, height: 3.5 });
       return group;
     }
 
@@ -95,10 +101,11 @@
       );
       rock.position.set(x, 0.8, z);
       scene.add(rock);
+      colliders.push({ x, z, width: 0.95, depth: 0.95, height: 1.8 });
       return rock;
     }
 
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 140; i++) {
       const x = (Math.random() - 0.5) * worldRadius * 1.8;
       const z = (Math.random() - 0.5) * worldRadius * 1.8;
       if (Math.abs(x) < 6 && Math.abs(z) < 6) continue;
@@ -106,7 +113,58 @@
       else createRock(x, z);
     }
 
-    // Simple sky dome
+    const waterCanvas = document.createElement('canvas');
+    waterCanvas.width = 256;
+    waterCanvas.height = 256;
+    const waterCtx = waterCanvas.getContext('2d');
+    const waterTexture = new THREE.CanvasTexture(waterCanvas);
+    waterTexture.wrapS = THREE.RepeatWrapping;
+    waterTexture.wrapT = THREE.RepeatWrapping;
+    waterTexture.repeat.set(2, 2);
+
+    const waterMaterial = new THREE.MeshStandardMaterial({
+      map: waterTexture,
+      color: 0x2f79d6,
+      transparent: true,
+      opacity: 0.85,
+      roughness: 0.2,
+      metalness: 0.05
+    });
+
+    const water = new THREE.Mesh(
+      new THREE.PlaneGeometry(22, 16, 80, 80),
+      waterMaterial
+    );
+    water.rotation.x = -Math.PI / 2;
+    water.position.set(0, 0.25, 16);
+    scene.add(water);
+
+    function updateWaterTexture(time) {
+      waterCtx.clearRect(0, 0, waterCanvas.width, waterCanvas.height);
+      const gradient = waterCtx.createLinearGradient(0, 0, 0, waterCanvas.height);
+      gradient.addColorStop(0, 'rgba(84, 171, 255, 0.82)');
+      gradient.addColorStop(1, 'rgba(18, 91, 185, 0.95)');
+      waterCtx.fillStyle = gradient;
+      waterCtx.fillRect(0, 0, waterCanvas.width, waterCanvas.height);
+
+      waterCtx.strokeStyle = 'rgba(255,255,255,0.35)';
+      waterCtx.lineWidth = 2;
+      for (let i = 0; i < 10; i++) {
+        const y = (i / 10) * waterCanvas.height;
+        waterCtx.beginPath();
+        waterCtx.moveTo(0, y);
+        for (let x = 0; x <= waterCanvas.width; x += 16) {
+          const wave = Math.sin(x / 40 + time * 2.4 + i * 0.7) * 5;
+          waterCtx.lineTo(x, y + wave);
+        }
+        waterCtx.stroke();
+      }
+      waterTexture.needsUpdate = true;
+      waterTexture.offset.x = time * 0.025;
+      waterTexture.offset.y = Math.sin(time * 0.85) * 0.02;
+      water.position.y = 0.24 + Math.sin(time * 2.2) * 0.015;
+    }
+
     const skyGeometry = new THREE.SphereGeometry(180, 32, 32);
     const skyMaterial = new THREE.MeshBasicMaterial({
       color: 0x8ad8ff,
@@ -117,6 +175,7 @@
 
     document.addEventListener('keydown', (e) => {
       keys[e.code] = true;
+      if (e.code === 'Space') e.preventDefault();
     });
     document.addEventListener('keyup', (e) => {
       keys[e.code] = false;
@@ -139,6 +198,15 @@
       mouse.pitch = THREE.MathUtils.clamp(mouse.pitch - e.movementY * mouse.sensitivity, -1.2, 1.2);
     });
 
+    function isBlocked(x, z) {
+      for (const collider of colliders) {
+        const insideX = x >= collider.x - collider.width && x <= collider.x + collider.width;
+        const insideZ = z >= collider.z - collider.depth && z <= collider.z + collider.depth;
+        if (insideX && insideZ) return true;
+      }
+      return false;
+    }
+
     function updatePlayer(dt) {
       const forward = new THREE.Vector3(Math.sin(mouse.yaw), 0, Math.cos(mouse.yaw));
       const right = new THREE.Vector3(Math.cos(mouse.yaw), 0, -Math.sin(mouse.yaw));
@@ -153,20 +221,40 @@
         move.normalize().multiplyScalar(player.speed * dt);
       }
 
-      player.velocity.x = move.x;
-      player.velocity.z = move.z;
+      const nextPosition = player.position.clone();
+      nextPosition.x += move.x;
+      nextPosition.z += move.z;
+
+      if (!isBlocked(nextPosition.x, nextPosition.z)) {
+        player.position.x = nextPosition.x;
+        player.position.z = nextPosition.z;
+      }
+
+      if (keys['Space'] && player.grounded) {
+        player.velocity.y = player.jumpForce;
+        player.grounded = false;
+      }
+
+      player.velocity.y -= player.gravity * dt;
+      player.position.y += player.velocity.y * dt;
+
+      if (player.position.y <= player.height) {
+        player.position.y = player.height;
+        player.velocity.y = 0;
+        player.grounded = true;
+      }
+
       camera.rotation.order = 'YXZ';
       camera.rotation.y = mouse.yaw;
       camera.rotation.x = mouse.pitch;
-
-      camera.position.x += player.velocity.x;
-      camera.position.z += player.velocity.z;
-      camera.position.y = 1.8;
+      camera.position.copy(player.position);
     }
 
     function animate() {
       requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.032);
+      const time = clock.elapsedTime;
+      updateWaterTexture(time);
       updatePlayer(dt);
       renderer.render(scene, camera);
     }
