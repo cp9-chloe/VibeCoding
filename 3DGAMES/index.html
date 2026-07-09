@@ -3,295 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3D Tag Chase</title>
+  <title>Low-Poly Explorer</title>
   <style>
-    html, body {
-      margin: 0;
-      overflow: hidden;
-      background: #101c1a;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-    canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      background: linear-gradient(#7ad0ff, #2b4f35 65%, #14251d 100%);
-    }
-    .hud {
-      position: fixed;
-      inset: 0;
+    html, body { margin: 0; overflow: hidden; background: #0d1723; }
+    canvas { display: block; }
+    #overlay {
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.45); color: #fff; font-family: Arial, sans-serif;
       pointer-events: none;
     }
-    .menu {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      background: rgba(0,0,0,0.75);
-      pointer-events: auto;
-      z-index: 5;
+    #overlay .panel {
+      text-align: center; background: rgba(12,20,31,0.9); padding: 20px 24px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
     }
-    .panel {
-      background: #203031;
-      border: 2px solid #8b5a3c;
-      border-radius: 16px;
-      padding: 20px 24px;
-      width: min(90vw, 360px);
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.35);
-    }
-    button {
-      margin: 8px;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 8px;
-      background: #c96c3b;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .info {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: rgba(0,0,0,0.45);
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.16);
-      font-size: 13px;
-      line-height: 1.45;
-      max-width: 320px;
-    }
-    .overlay {
-      position: absolute;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.7);
-      pointer-events: auto;
-      z-index: 4;
-    }
-    .overlay.show { display: flex; }
-    .msg {
-      background: #233130;
-      border: 2px solid #8b5a3c;
-      border-radius: 12px;
-      padding: 20px 24px;
-      text-align: center;
-    }
+    #overlay h1 { margin: 0 0 8px; font-size: 24px; }
+    #overlay p { margin: 0; opacity: 0.9; }
   </style>
 </head>
 <body>
-  <canvas id="game"></canvas>
-  <div class="hud">
-    <div class="menu" id="menu">
-      <div class="panel">
-        <h2>Runaway Ball</h2>
-        <p>Select a map to begin.</p>
-        <button onclick="startGame('backyard')">Backyard</button>
-        <button onclick="startGame('park')">Park</button>
-      </div>
-    </div>
-    <div class="info" id="info">Runaway Ball — choose a map to start the chase.</div>
-    <div class="overlay" id="winOverlay">
-      <div class="msg">
-        <h2>You caught the ball!</h2>
-        <p>The ball is no longer running.</p>
-        <button onclick="location.reload()">Play Again</button>
-      </div>
+  <div id="overlay">
+    <div class="panel">
+      <h1>Low-Poly Explorer</h1>
+      <p>WASD to move • Mouse to look around</p>
     </div>
   </div>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script>
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-    const menu = document.getElementById('menu');
-    const info = document.getElementById('info');
-    const winOverlay = document.getElementById('winOverlay');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x7ec8ff);
 
-    function resize() {
-      canvas.width = window.innerWidth * devicePixelRatio;
-      canvas.height = window.innerHeight * devicePixelRatio;
-      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    }
-    window.addEventListener('resize', resize);
-    resize();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 1.8, 0);
 
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const clock = new THREE.Clock();
     const keys = {};
-    const cam = { yaw: 0, pitch: -0.15 };
-    const player = { x: 0, y: 1.3, z: 0, speed: 50, radius: 0.9, vy: 0, onGround: true };
-    const cat = { x: 8, y: 1.2, z: 7, speed: 48, radius: 0.8, vx: 0, vz: 0 };
-    const mapState = { current: null, objects: [] };
-    let gameStarted = false;
-    let won = false;
+    const mouse = { sensitivity: 0.002, yaw: 0, pitch: 0 };
 
-    function startGame(map) {
-      mapState.current = map;
-      gameStarted = true;
-      menu.style.display = 'none';
-      info.textContent = map === 'backyard' ? 'Backyard map: trampolines and baseball gear.' : 'Park map: benches and trees.';
-      buildMap(map);
+    const player = {
+      velocity: new THREE.Vector3(),
+      speed: 8,
+      height: 1.8,
+      grounded: true
+    };
+
+    const worldRadius = 80;
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(worldRadius * 2, worldRadius * 2, 80, 80),
+      new THREE.MeshStandardMaterial({ color: 0x4f9a3f, roughness: 1 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.65);
+    scene.add(ambient);
+    const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+    sun.position.set(10, 20, 10);
+    sun.castShadow = true;
+    scene.add(sun);
+
+    function createTree(x, z) {
+      const group = new THREE.Group();
+      const trunk = new THREE.Mesh(
+        new THREE.BoxGeometry(0.35, 2.2, 0.35),
+        new THREE.MeshStandardMaterial({ color: 0x7a4a23 })
+      );
+      trunk.position.y = 1.1;
+      group.add(trunk);
+
+      const crown = new THREE.Mesh(
+        new THREE.ConeGeometry(1.4, 2.2, 5),
+        new THREE.MeshStandardMaterial({ color: 0x2f7c32 })
+      );
+      crown.position.y = 2.7;
+      group.add(crown);
+
+      group.position.set(x, 0, z);
+      scene.add(group);
+      return group;
     }
 
-    function buildMap(map) {
-      mapState.objects = [];
-      if (map === 'backyard') {
-        for (let i = 0; i < 10; i++) {
-          mapState.objects.push({ type: 'trampoline', x: (Math.random() - 0.5) * 18, z: (Math.random() - 0.5) * 18 });
-          mapState.objects.push({ type: 'bat', x: (Math.random() - 0.5) * 16, z: (Math.random() - 0.5) * 16 });
-        }
+    function createRock(x, z) {
+      const rock = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(0.8, 0),
+        new THREE.MeshStandardMaterial({ color: 0x6f6f6f, roughness: 1 })
+      );
+      rock.position.set(x, 0.8, z);
+      scene.add(rock);
+      return rock;
+    }
+
+    for (let i = 0; i < 120; i++) {
+      const x = (Math.random() - 0.5) * worldRadius * 1.8;
+      const z = (Math.random() - 0.5) * worldRadius * 1.8;
+      if (Math.abs(x) < 6 && Math.abs(z) < 6) continue;
+      if (Math.random() < 0.6) createTree(x, z);
+      else createRock(x, z);
+    }
+
+    // Simple sky dome
+    const skyGeometry = new THREE.SphereGeometry(180, 32, 32);
+    const skyMaterial = new THREE.MeshBasicMaterial({
+      color: 0x8ad8ff,
+      side: THREE.BackSide
+    });
+    const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+    scene.add(sky);
+
+    document.addEventListener('keydown', (e) => {
+      keys[e.code] = true;
+    });
+    document.addEventListener('keyup', (e) => {
+      keys[e.code] = false;
+    });
+
+    document.addEventListener('pointerlockchange', () => {
+      if (document.pointerLockElement === renderer.domElement) {
+        document.getElementById('overlay').style.display = 'none';
       } else {
-        for (let i = 0; i < 12; i++) {
-          mapState.objects.push({ type: 'bench', x: (Math.random() - 0.5) * 20, z: (Math.random() - 0.5) * 20 });
-          mapState.objects.push({ type: 'tree', x: (Math.random() - 0.5) * 22, z: (Math.random() - 0.5) * 22 });
-        }
+        document.getElementById('overlay').style.display = 'flex';
       }
-      player.x = 0; player.z = 0; cat.x = map === 'backyard' ? 6 : 8; cat.z = map === 'backyard' ? 6 : -8;
-    }
+    });
+    renderer.domElement.addEventListener('click', () => {
+      renderer.domElement.requestPointerLock();
+    });
 
-    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    document.addEventListener('mousemove', (e) => {
+      if (document.pointerLockElement !== renderer.domElement) return;
+      mouse.yaw -= e.movementX * mouse.sensitivity;
+      mouse.pitch = THREE.MathUtils.clamp(mouse.pitch - e.movementY * mouse.sensitivity, -1.2, 1.2);
+    });
 
     function updatePlayer(dt) {
-      if (!gameStarted || won) return;
-      const forward = { x: Math.sin(cam.yaw), z: Math.cos(cam.yaw) };
-      const right = { x: Math.cos(cam.yaw), z: -Math.sin(cam.yaw) };
-      let moveX = 0, moveZ = 0;
-      if (keys['w']) { moveX += forward.x; moveZ += forward.z; }
-      if (keys['s']) { moveX -= forward.x; moveZ -= forward.z; }
-      if (keys['a']) { moveX -= right.x; moveZ -= right.z; }
-      if (keys['d']) { moveX += right.x; moveZ += right.z; }
-      const len = Math.hypot(moveX, moveZ) || 1;
-      moveX /= len; moveZ /= len;
-      player.x += moveX * player.speed * dt;
-      player.z += moveZ * player.speed * dt;
-      player.x = clamp(player.x, -17, 17);
-      player.z = clamp(player.z, -17, 17);
-      if (keys[' '] && player.onGround) {
-        player.vy = 8.5; player.onGround = false;
+      const forward = new THREE.Vector3(Math.sin(mouse.yaw), 0, Math.cos(mouse.yaw));
+      const right = new THREE.Vector3(Math.cos(mouse.yaw), 0, -Math.sin(mouse.yaw));
+      const move = new THREE.Vector3();
+
+      if (keys['KeyW']) move.add(forward);
+      if (keys['KeyS']) move.sub(forward);
+      if (keys['KeyA']) move.sub(right);
+      if (keys['KeyD']) move.add(right);
+
+      if (move.lengthSq() > 0) {
+        move.normalize().multiplyScalar(player.speed * dt);
       }
-      player.vy -= 12 * dt;
-      player.y += player.vy * dt;
-      if (player.y <= 1.3) { player.y = 1.3; player.vy = 0; player.onGround = true; }
+
+      player.velocity.x = move.x;
+      player.velocity.z = move.z;
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = mouse.yaw;
+      camera.rotation.x = mouse.pitch;
+
+      camera.position.x += player.velocity.x;
+      camera.position.z += player.velocity.z;
+      camera.position.y = 1.8;
     }
 
-    function updateCat(dt) {
-      if (!gameStarted || won) return;
-      const dx = player.x - cat.x;
-      const dz = player.z - cat.z;
-      const dist = Math.hypot(dx, dz) || 0.001;
-      const fleeX = -dx / dist;
-      const fleeZ = -dz / dist;
-      cat.x += fleeX * cat.speed * dt;
-      cat.z += fleeZ * cat.speed * dt;
-      cat.x = clamp(cat.x, -17, 17);
-      cat.z = clamp(cat.z, -17, 17);
-      if (Math.hypot(player.x - cat.x, player.z - cat.z) < 1.6) {
-        won = true;
-        winOverlay.classList.add('show');
-      }
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.032);
+      updatePlayer(dt);
+      renderer.render(scene, camera);
     }
+    animate();
 
-    function drawScene() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#7fd3ff');
-      sky.addColorStop(0.6, '#4f7d4b');
-      sky.addColorStop(1, '#172b1f');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, h);
-
-      const groundY = h * 0.68;
-      ctx.fillStyle = '#5d8743';
-      ctx.fillRect(0, groundY, w, h - groundY);
-
-      for (let i = -8; i <= 8; i++) {
-        for (let j = -8; j <= 8; j++) {
-          const tileX = i * 70 + ((player.x * 8) % 70);
-          const tileZ = j * 70 + ((player.z * 8) % 70);
-          const sx = w * 0.5 + tileX * 0.4 - 220;
-          const sy = groundY - tileZ * 0.18 - 40;
-          ctx.fillStyle = (i + j) % 2 === 0 ? '#6ca34d' : '#4f8c3d';
-          ctx.fillRect(sx, sy, 44, 44);
-        }
-      }
-
-      for (const obj of mapState.objects) {
-        const relX = obj.x - player.x;
-        const relZ = obj.z - player.z;
-        const depth = Math.max(1, 140 - Math.hypot(relX, relZ) * 12);
-        const sx = w * 0.5 + relX * 7;
-        const sy = groundY - relZ * 4 - depth * 0.2;
-        if (obj.type === 'trampoline') {
-          ctx.fillStyle = '#6e4cff';
-          ctx.fillRect(sx - 18, sy - 6, 36, 12);
-        } else if (obj.type === 'bat') {
-          ctx.fillStyle = '#d8c08c';
-          ctx.fillRect(sx - 10, sy - 4, 20, 8);
-        } else if (obj.type === 'bench') {
-          ctx.fillStyle = '#8b5a3c';
-          ctx.fillRect(sx - 20, sy - 8, 40, 16);
-        } else if (obj.type === 'tree') {
-          ctx.fillStyle = '#6a3d16';
-          ctx.fillRect(sx - 5, sy - 22, 10, 24);
-          ctx.fillStyle = '#2e7d32';
-          ctx.beginPath(); ctx.arc(sx, sy - 24, 16, 0, Math.PI * 2); ctx.fill();
-        }
-      }
-
-      ctx.save();
-      ctx.translate(w * 0.5, groundY - 30);
-      ctx.fillStyle = '#1f5cff';
-      ctx.fillRect(-12, -46, 24, 24);
-      ctx.fillStyle = '#f3d8c1';
-      ctx.fillRect(-10, -22, 20, 24);
-      ctx.fillStyle = '#1f5cff';
-      ctx.fillRect(-16, -2, 12, 30);
-      ctx.fillRect(4, -2, 12, 30);
-      ctx.fillStyle = '#0f2238';
-      ctx.fillRect(-7, -36, 5, 8);
-      ctx.fillRect(2, -36, 5, 8);
-      ctx.fillStyle = '#3a2a1a';
-      ctx.fillRect(-12, 28, 8, 8);
-      ctx.fillRect(4, 28, 8, 8);
-      ctx.restore();
-
-      const ballX = w * 0.5 + 70;
-      const ballY = groundY - 30;
-      ctx.save();
-      ctx.translate(ballX, ballY);
-      ctx.fillStyle = '#ff4d4d';
-      ctx.beginPath(); ctx.arc(0, -18, 28, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath(); ctx.arc(-8, -24, 6, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-    }
-
-    function loop(now) {
-      const dt = Math.min(0.03, (now - (loop.last || now)) / 1000);
-      loop.last = now;
-      if (gameStarted && !won) {
-        updatePlayer(dt);
-        updateCat(dt);
-      }
-      drawScene();
-      requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') e.preventDefault();
-      keys[e.key.toLowerCase()] = true;
-    });
-    window.addEventListener('keyup', (e) => {
-      keys[e.key.toLowerCase()] = false;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      const sens = 0.0025;
-      cam.yaw -= e.movementX * sens;
-      cam.pitch = clamp(cam.pitch - e.movementY * sens, -0.8, 0.8);
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
