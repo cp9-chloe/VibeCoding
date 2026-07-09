@@ -88,16 +88,17 @@
   <div class="hud">
     <div class="menu" id="menu">
       <div class="panel">
-        <h2>Select a Map</h2>
+        <h2>Runaway Ball</h2>
+        <p>Select a map to begin.</p>
         <button onclick="startGame('backyard')">Backyard</button>
         <button onclick="startGame('park')">Park</button>
       </div>
     </div>
-    <div class="info" id="info">Choose a map to start the chase.</div>
+    <div class="info" id="info">Runaway Ball — choose a map to start the chase.</div>
     <div class="overlay" id="winOverlay">
       <div class="msg">
-        <h2>You caught the cat!</h2>
-        <p>The cat is no longer running.</p>
+        <h2>You caught the ball!</h2>
+        <p>The ball is no longer running.</p>
         <button onclick="location.reload()">Play Again</button>
       </div>
     </div>
@@ -201,12 +202,27 @@
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, w, h);
 
+      const groundY = h * 0.68;
       ctx.fillStyle = '#5d8743';
-      ctx.fillRect(0, h * 0.66, w, h * 0.34);
+      ctx.fillRect(0, groundY, w, h - groundY);
+
+      for (let i = -8; i <= 8; i++) {
+        for (let j = -8; j <= 8; j++) {
+          const tileX = i * 70 + ((player.x * 8) % 70);
+          const tileZ = j * 70 + ((player.z * 8) % 70);
+          const sx = w * 0.5 + tileX * 0.4 - 220;
+          const sy = groundY - tileZ * 0.18 - 40;
+          ctx.fillStyle = (i + j) % 2 === 0 ? '#6ca34d' : '#4f8c3d';
+          ctx.fillRect(sx, sy, 44, 44);
+        }
+      }
 
       for (const obj of mapState.objects) {
-        const sx = (obj.x - player.x) * 8 + w * 0.5;
-        const sy = (obj.z - player.z) * 8 + h * 0.5;
+        const relX = obj.x - player.x;
+        const relZ = obj.z - player.z;
+        const depth = Math.max(1, 140 - Math.hypot(relX, relZ) * 12);
+        const sx = w * 0.5 + relX * 7;
+        const sy = groundY - relZ * 4 - depth * 0.2;
         if (obj.type === 'trampoline') {
           ctx.fillStyle = '#6e4cff';
           ctx.fillRect(sx - 18, sy - 6, 36, 12);
@@ -224,27 +240,27 @@
         }
       }
 
-      // Draw player character (third person)
       ctx.save();
-      ctx.translate(w * 0.5, h * 0.55);
+      ctx.translate(w * 0.5, groundY - 30);
       ctx.fillStyle = '#1f5cff';
-      ctx.fillRect(-14, -46, 28, 24);
+      ctx.fillRect(-12, -46, 24, 24);
       ctx.fillStyle = '#f3d8c1';
       ctx.fillRect(-10, -22, 20, 24);
       ctx.fillStyle = '#1f5cff';
       ctx.fillRect(-16, -2, 12, 30);
       ctx.fillRect(4, -2, 12, 30);
       ctx.fillStyle = '#0f2238';
-      ctx.fillRect(-8, -36, 6, 8);
-      ctx.fillRect(2, -36, 6, 8);
+      ctx.fillRect(-7, -36, 5, 8);
+      ctx.fillRect(2, -36, 5, 8);
       ctx.fillStyle = '#3a2a1a';
-      ctx.fillRect(-14, 28, 10, 8);
-      ctx.fillRect(4, 28, 10, 8);
+      ctx.fillRect(-12, 28, 8, 8);
+      ctx.fillRect(4, 28, 8, 8);
       ctx.restore();
 
-      // Draw ball
+      const ballX = w * 0.5 + 70;
+      const ballY = groundY - 30;
       ctx.save();
-      ctx.translate(w * 0.5 + 70, h * 0.55 + 10);
+      ctx.translate(ballX, ballY);
       ctx.fillStyle = '#ff4d4d';
       ctx.beginPath(); ctx.arc(0, -18, 28, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#ffffff';
