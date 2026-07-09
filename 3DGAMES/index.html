@@ -179,8 +179,10 @@
       const dx = player.x - cat.x;
       const dz = player.z - cat.z;
       const dist = Math.hypot(dx, dz) || 0.001;
-      cat.x += (dx / dist) * -cat.speed * dt;
-      cat.z += (dz / dist) * -cat.speed * dt;
+      const fleeX = -dx / dist;
+      const fleeZ = -dz / dist;
+      cat.x += fleeX * cat.speed * dt;
+      cat.z += fleeZ * cat.speed * dt;
       cat.x = clamp(cat.x, -17, 17);
       cat.z = clamp(cat.z, -17, 17);
       if (Math.hypot(player.x - cat.x, player.z - cat.z) < 1.6) {
@@ -226,17 +228,27 @@
       ctx.save();
       ctx.translate(w * 0.5, h * 0.55);
       ctx.fillStyle = '#1f5cff';
-      ctx.beginPath(); ctx.arc(0, -24, 16, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-10, -8, 20, 28);
+      ctx.fillRect(-14, -46, 28, 24);
+      ctx.fillStyle = '#f3d8c1';
+      ctx.fillRect(-10, -22, 20, 24);
+      ctx.fillStyle = '#1f5cff';
+      ctx.fillRect(-16, -2, 12, 30);
+      ctx.fillRect(4, -2, 12, 30);
+      ctx.fillStyle = '#0f2238';
+      ctx.fillRect(-8, -36, 6, 8);
+      ctx.fillRect(2, -36, 6, 8);
+      ctx.fillStyle = '#3a2a1a';
+      ctx.fillRect(-14, 28, 10, 8);
+      ctx.fillRect(4, 28, 10, 8);
       ctx.restore();
 
-      // Draw cat
+      // Draw ball
       ctx.save();
       ctx.translate(w * 0.5 + 70, h * 0.55 + 10);
-      ctx.fillStyle = '#5e5148';
-      ctx.beginPath(); ctx.arc(0, -18, 14, 0, Math.PI * 2); ctx.fill();
-      ctx.fillRect(-10, -6, 20, 20);
+      ctx.fillStyle = '#ff4d4d';
+      ctx.beginPath(); ctx.arc(0, -18, 28, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(-8, -24, 6, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
 
