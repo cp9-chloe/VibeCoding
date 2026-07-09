@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jungle Adventure</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #08120d;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: crosshair;
+      background: linear-gradient(#5cc7ff, #1f5f3d 60%, #0b2118 100%);
+    }
+    .hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+    .info {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.45);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.18);
+      max-width: 320px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .crosshair::before, .crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(255,255,255,0.9);
+    }
+    .crosshair::before { width: 2px; height: 16px; left: 7px; }
+    .crosshair::after { width: 16px; height: 2px; top: 7px; }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div class="hud">
+    <div class="info">
+      Jungle Low-Poly Adventure<br>
+      WASD to move • Space to jump • Arrow keys to look around<br>
+      Endless platform • Animals roam the jungle
+    </div>
+    <div class="crosshair"></div>
+  </div>
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth * devicePixelRatio;
+      canvas.height = window.innerHeight * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const keys = {};
+    const look = { yaw: 0, pitch: 0 };
+    const player = {
+      x: 0,
+      y: 1.6,
+      z: 0,
+      vx: 0,
+      vz: 0,
+      vy: 0,
+      onGround: true,
+      height: 1.8,
+      speed: 4.5,
+      jumpVel: 6.5
+    };
+
+    const world = {
+      size: 120,
+      scale: 8,
+      grassHeight: 2.2,
+      terrain: []
+    };
+
+    const animals = [];
+
+    function rand(n) {
+      return Math.sin(n * 12.9898) * 43758.5453 % 1;
+    }
+
+    function generateTerrain() {
+      for (let x = -world.size; x <= world.size; x += 1) {
+        for (let z = -world.size; z <= world.size; z += 1) {
+          const nx = x / 8;
+          const nz = z / 8;
+          const h = Math.floor((Math.sin(nx * 0.6) + Math.cos(nz * 0.4) + 1.2) * 1.2);
+          world.terrain.push({ x, z, h });
+        }
+      }
+    }
+
+    function spawnAnimals() {
+      for (let i = 0; i < 16; i++) {
+        const x = (Math.random() - 0.5) * 60;
+        const z = (Math.random() - 0.5) * 60;
+        animals.push({
+          type: ['parrot', 'monkey', 'deer', 'tiger'][i % 4],
+          x,
+          z,
+          y: 0.7 + Math.random() * 0.8,
+          wobble: Math.random() * Math.PI * 2,
+          speed: 0.7 + Math.random() * 0.8,
+          dir: Math.random() > 0.5 ? 1 : -1
+        });
+      }
+    }
+
+    generateTerrain();
+    spawnAnimals();
+
+    const treePositions = [];
+    for (let i = 0; i < 120; i++) {
+      treePositions.push({
+        x: (Math.random() - 0.5) * 90,
+        z: (Math.random() - 0.5) * 90
+      });
+    }
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function worldHeightAt(x, z) {
+      const cellX = Math.round(x / world.scale);
+      const cellZ = Math.round(z / world.scale);
+      let best = 0;
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dz = -1; dz <= 1; dz++) {
+          const sample = world.terrain.find(t => t.x === cellX + dx && t.z === cellZ + dz);
+          if (sample) best = Math.max(best, sample.h);
+        }
+      }
+      return best;
+    }
+
+    function updatePlayer(dt) {
+      const forward = {
+        x: Math.sin(look.yaw),
+        z: Math.cos(look.yaw)
+      };
+      const right = {
+        x: Math.cos(look.yaw),
+        z: -Math.sin(look.yaw)
+      };
+
+      let moveX = 0;
+      let moveZ = 0;
+      if (keys['w']) { moveX += forward.x; moveZ += forward.z; }
+      if (keys['s']) { moveX -= forward.x; moveZ -= forward.z; }
+      if (keys['a']) { moveX -= right.x; moveZ -= right.z; }
+      if (keys['d']) { moveX += right.x; moveZ += right.z; }
+
+      const len = Math.hypot(moveX, moveZ) || 1;
+      moveX /= len;
+      moveZ /= len;
+
+      player.vx = moveX * player.speed;
+      player.vz = moveZ * player.speed;
+
+      player.x += player.vx * dt;
+      player.z += player.vz * dt;
+
+      const groundY = worldHeightAt(player.x, player.z) * world.scale * 0.16 + 0.2;
+      if (player.y <= groundY) {
+        player.y = groundY;
+        player.onGround = true;
+        player.vy = 0;
+      } else {
+        player.onGround = false;
+      }
+
+      if (keys[' '] && player.onGround) {
+        player.vy = player.jumpVel;
+        player.onGround = false;
+      }
+      player.vy -= 9.8 * dt * 0.3;
+      player.y += player.vy * dt;
+
+      if (player.y < groundY) {
+        player.y = groundY;
+        player.vy = 0;
+        player.onGround = true;
+      }
+    }
+
+    function updateAnimals(dt) {
+      for (const a of animals) {
+        a.wobble += dt * 1.6;
+        a.x += Math.sin(a.wobble) * a.speed * dt * 0.08 * a.dir;
+        a.z += Math.cos(a.wobble * 0.5) * a.speed * dt * 0.05 * a.dir;
+        if (Math.abs(a.x) > 50 || Math.abs(a.z) > 50) {
+          a.dir *= -1;
+        }
+      }
+    }
+
+    function render() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, '#76d7ff');
+      sky.addColorStop(0.55, '#4cae73');
+      sky.addColorStop(1, '#112815');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(1, 0.6);
+      ctx.fillStyle = 'rgba(255,255,255,0.14)';
+      ctx.beginPath();
+      ctx.arc(0, -h * 0.18, 180, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      const viewDist = 24;
+      const startX = Math.floor(player.x - viewDist);
+      const endX = Math.ceil(player.x + viewDist);
+      const startZ = Math.floor(player.z - viewDist);
+      const endZ = Math.ceil(player.z + viewDist);
+
+      for (let x = startX; x <= endX; x++) {
+        for (let z = startZ; z <= endZ; z++) {
+          const ground = worldHeightAt(x, z);
+          const y = ground * world.scale * 0.16 + 0.2;
+          const dx = x - player.x;
+          const dz = z - player.z;
+          const dist = Math.hypot(dx, dz);
+          if (dist > 24) continue;
+          const screenX = (dx / (dist + 0.001)) * 220 + w * 0.5;
+          const screenY = (dz / (dist + 0.001)) * 220 + h * 0.5;
+          const base = Math.max(0, 400 - dist * 18);
+          ctx.fillStyle = `rgb(70, ${120 + ground * 8}, 45)`;
+          ctx.fillRect(screenX - 4, h - 70 - ground * 4, 8, 8 + ground * 4);
+          ctx.fillRect(screenX - 16, h - 60 - ground * 4, 32, 8 + ground * 4);
+          if (ground > 0) {
+            ctx.fillStyle = '#3c8b46';
+            ctx.fillRect(screenX - 10, h - 80 - ground * 4, 20, 10);
+          }
+        }
+      }
+
+      for (const tree of treePositions) {
+        const dx = tree.x - player.x;
+        const dz = tree.z - player.z;
+        const dist = Math.hypot(dx, dz);
+        if (dist > 24) continue;
+        const screenX = (dx / (dist + 0.001)) * 220 + w * 0.5;
+        const screenY = (dz / (dist + 0.001)) * 220 + h * 0.5;
+        const trunkHeight = 20 + (tree.x + tree.z) % 3;
+        ctx.fillStyle = '#6a3d16';
+        ctx.fillRect(screenX - 3, h - 60 - trunkHeight, 6, trunkHeight);
+        ctx.fillStyle = '#2d7a2f';
+        ctx.beginPath();
+        ctx.arc(screenX, h - 70 - trunkHeight, 15, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      for (const animal of animals) {
+        const dx = animal.x - player.x;
+        const dz = animal.z - player.z;
+        const dist = Math.hypot(dx, dz);
+        if (dist > 24) continue;
+        const screenX = (dx / (dist + 0.001)) * 220 + w * 0.5;
+        const screenY = (dz / (dist + 0.001)) * 220 + h * 0.5;
+        ctx.fillStyle = animal.type === 'parrot' ? '#ff9f1c' : animal.type === 'monkey' ? '#5a3b1b' : animal.type === 'deer' ? '#d1c1a2' : '#6f3d1b';
+        ctx.fillRect(screenX - 8, h - 70 + Math.sin(Date.now() * 0.002 + animal.wobble) * 2, 16, 12);
+      }
+
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fillRect(w * 0.5 - 2, h * 0.5 - 18, 4, 36);
+      ctx.fillRect(w * 0.5 - 18, h * 0.5 - 2, 36, 4);
+    }
+
+    let last = performance.now();
+    function loop(now) {
+      const dt = Math.min(0.033, (now - last) / 1000);
+      last = now;
+      updatePlayer(dt);
+      updateAnimals(dt);
+      render();
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    window.addEventListener('keydown', (e) => {
+      keys[e.key.toLowerCase()] = true;
+      if (e.code === 'Space') e.preventDefault();
+    });
+    window.addEventListener('keyup', (e) => {
+      keys[e.key.toLowerCase()] = false;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      const sensitivity = 0.0025;
+      look.yaw -= e.movementX * sensitivity;
+      look.pitch = clamp(look.pitch - e.movementY * sensitivity, -0.9, 0.9);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') look.yaw -= 0.15;
+      if (e.key === 'ArrowRight') look.yaw += 0.15;
+      if (e.key === 'ArrowUp') look.pitch = clamp(look.pitch - 0.1, -0.9, 0.9);
+      if (e.key === 'ArrowDown') look.pitch = clamp(look.pitch + 0.1, -0.9, 0.9);
+    });
+  </script>
+</body>
+</html>
