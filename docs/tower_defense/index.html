@@ -252,12 +252,13 @@ function update(dt) {
 
   if (!waveActive && pendingWave) {
     pendingWave = false;
+    gold += 100;
     waveIndex++;
     if (waveIndex >= WAVES.length && enemies.length === 0) { state='gameover'; won=true; }
   }
 
-  if (!waveActive && !pendingWave && spawnQueue.length === 0 && waveActive !== false) {
-    if (waveIndex < WAVES.length) pendingWave = true;
+  if (!waveActive && !pendingWave && spawnQueue.length === 0 && enemies.length === 0 && waveIndex < WAVES.length) {
+    pendingWave = true;
   }
 
   if (lives<=0) { state='gameover'; won=false; }
