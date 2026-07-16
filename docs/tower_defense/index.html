@@ -34,12 +34,12 @@ const TOWERS = {
 };
 
 const ENEMIES = {
-  basic:  { hp: 50,  spd: 1.5, armor: 0, reward: 5,  color: '#dc3232', size: 0.3 },
-  fast:   { hp: 30,  spd: 3.0, armor: 0, reward: 7,  color: '#c8c832', size: 0.25 },
-  tank:   { hp: 150, spd: 0.8, armor: 3, reward: 15, color: '#3c3c3c', size: 0.4 },
-  flying: { hp: 40,  spd: 2.0, armor: 0, reward: 10, color: '#ffffff', size: 0.3, flying: true },
-  healer: { hp: 60,  spd: 1.2, armor: 0, reward: 12, color: '#32c832', size: 0.3, healRate: 3 },
-  boss:   { hp: 500, spd: 0.5, armor: 5, reward: 50, color: '#ff00ff', size: 0.45 }
+  basic:  { hp: 50,  reward: 5,  color: '#dc3232', size: 0.3 },
+  fast:   { hp: 30,  reward: 7,  color: '#c8c832', size: 0.25 },
+  tank:   { hp: 150, reward: 15, color: '#3c3c3c', size: 0.4, armor: 3 },
+  flying: { hp: 40,  reward: 10, color: '#ffffff', size: 0.3, flying: true },
+  healer: { hp: 60,  reward: 12, color: '#32c832', size: 0.3, healRate: 3 },
+  boss:   { hp: 500, reward: 50, color: '#ff00ff', size: 0.45, armor: 5 }
 };
 
 function generateWave(waveNum) {
@@ -75,22 +75,36 @@ const PATH_TILES = [
 
 let grid, path, state, gold, lives, selectedType;
 let towers, enemies, projectiles, particles, lasers;
-let waveIndex, waveActive, spawnQueue, spawnTimer, waveDelay, won, pendingWave;
+let waveIndex, waveActive, spawnQueue, spawnTimer, waveDelay, pendingWave, waveSent;
 
-function resetGame() {
+function resetGrid() {
   grid = Array.from({length:ROWS}, () => Array(COLS).fill(0));
   PATH_TILES.forEach(([x,y]) => grid[y][x] = 1);
   grid[5][0] = 2;
   grid[4][19] = 3;
+}
+
+function resetAll() {
+  resetGrid();
+  path = PATH_TILES.map(([x,y]) => ({x:x+0.5, y:y+0.5}));
+  gold = 150; lives = 20;
+  selectedType = null;
+  towers = []; enemies = []; projectiles = []; particles = []; lasers = [];
+  waveIndex = 0; waveActive = false; spawnQueue = []; spawnTimer = 0; waveDelay = 0;
+  pendingWave = false; waveSent = false;
+}
+
+function initGame() {
+  resetGrid();
   path = PATH_TILES.map(([x,y]) => ({x:x+0.5, y:y+0.5}));
   state = 'menu';
   gold = 150; lives = 20;
   selectedType = null;
   towers = []; enemies = []; projectiles = []; particles = []; lasers = [];
   waveIndex = 0; waveActive = false; spawnQueue = []; spawnTimer = 0; waveDelay = 0;
-  won = false; pendingWave = false;
+  pendingWave = false; waveSent = false;
 }
-resetGame();
+initGame();
 
 function canPlace(tx, ty) { return tx>=0 && tx<COLS && ty>=0 && ty<ROWS && grid[ty][tx]===0; }
 function dist(a,b) { return Math.hypot(a.x-b.x, a.y-b.y); }
@@ -106,6 +120,7 @@ function startWave() {
   if (waveActive) return;
   waveActive = true;
   pendingWave = false;
+  waveSent = true;
   spawnQueue = [];
   const wave = generateWave(waveIndex);
   wave.forEach(g => {
@@ -118,13 +133,13 @@ function startWave() {
 }
 
 function createEnemy(type) {
-  const waveSpeed = (waveIndex + 1) * 1;
+  const waveSpeed = waveIndex + 1;
   const hpScale = 1 + waveIndex * 0.08;
   const c = ENEMIES[type];
   return {
     type, x:path[0].x, y:path[0].y, pathIdx:0,
     hp:c.hp*hpScale, maxHp:c.hp*hpScale, speed:waveSpeed, baseSpeed:waveSpeed,
-    armor:c.armor, reward:c.reward, color:c.color, size:c.size,
+    armor:c.armor||0, reward:c.reward, color:c.color, size:c.size,
     flying:c.flying||false, healRate:c.healRate||0,
     alive:true, reachedEnd:false, slowTimer:0, slowFactor:1, poisonTimer:0, poisonDmg:0
   };
@@ -139,13 +154,10 @@ function fireTower(t) {
     if (d <= c.range && d < bestD) { target = e; bestD = d; }
   });
   if (!target) return null;
-
   t.angle = Math.atan2(target.y-t.y, target.x-t.x);
-
   if (c.laser) {
     return { type:'laser', x1:t.x, y1:t.y, x2:target.x, y2:target.y, target, dmg:c.dmg, color:c.color, life:0.1 };
   }
-
   projectiles.push({
     x:t.x, y:t.y, target, dmg:c.dmg, speed:8,
     splash:c.splash||0, slow:c.slow||0, dot:c.dot||0,
@@ -258,17 +270,17 @@ function update(dt) {
   particles.forEach(p => { p.x+=p.vx*dt; p.y+=p.vy*dt; p.vx*=0.95; p.vy*=0.95; p.life-=dt; });
   particles = particles.filter(p => p.life>0);
 
-  if (!waveActive && pendingWave) {
+  if (waveSent && !waveActive && pendingWave) {
     pendingWave = false;
     gold += 100;
     waveIndex++;
   }
 
-  if (!waveActive && !pendingWave && spawnQueue.length === 0 && enemies.length === 0) {
+  if (waveSent && !waveActive && !pendingWave && spawnQueue.length === 0 && enemies.length === 0) {
     pendingWave = true;
   }
 
-  if (lives<=0) { state='gameover'; won=false; }
+  if (lives<=0) { state='gameover'; }
 }
 
 function drawGrid() {
@@ -323,13 +335,9 @@ function drawEnemies() {
 function drawLasers() {
   lasers.forEach(l => {
     const x1=l.x1*TILE, y1=l.y1*TILE, x2=l.x2*TILE, y2=l.y2*TILE;
-    ctx.strokeStyle='#66aaff';
-    ctx.lineWidth=3;
-    ctx.shadowColor='#66aaff';
-    ctx.shadowBlur=10;
+    ctx.strokeStyle='#66aaff'; ctx.lineWidth=3; ctx.shadowColor='#66aaff'; ctx.shadowBlur=10;
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-    ctx.strokeStyle='white';
-    ctx.lineWidth=1;
+    ctx.strokeStyle='white'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
     ctx.shadowBlur=0;
   });
@@ -369,11 +377,11 @@ function drawUI() {
   ctx.fillText(`Lives: ${lives}`, 120, 30);
   ctx.fillStyle='white';
   ctx.font='16px Arial';
-  ctx.fillText(`Wave ${waveIndex+1}`, 280, 28);
+  ctx.fillText(`Level ${waveIndex+1}`, 280, 28);
 
   if (!waveActive) {
     ctx.fillStyle='#66ff66';
-    ctx.fillText('[SPACE] Send Wave', 480, 28);
+    ctx.fillText('[SPACE] Send Wave', 430, 28);
   }
 
   const types = Object.keys(TOWERS);
@@ -391,6 +399,14 @@ function drawUI() {
     ctx.fillStyle=c.color;
     ctx.beginPath(); ctx.arc(bx+btnW/2, by+42, 7, 0, Math.PI*2); ctx.fill();
   });
+
+  const trashX = W - 50, trashY = H - UI_H + 15;
+  ctx.fillStyle='#555';
+  ctx.beginPath(); ctx.roundRect(trashX, trashY, 35, 35, 4); ctx.fill();
+  ctx.strokeStyle='#888'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.roundRect(trashX, trashY, 35, 35, 4); ctx.stroke();
+  ctx.fillStyle='#ff4444'; ctx.font='20px Arial';
+  ctx.fillText('\u2716', trashX+8, trashY+25);
 }
 
 function drawMenu() {
@@ -400,10 +416,8 @@ function drawMenu() {
   ctx.fillText('TOWER DEFENSE', W/2, H/3-20);
   ctx.font='24px Arial'; ctx.fillStyle='#aaaaaa';
   ctx.fillText('A strategy tower defense game', W/2, H/3+25);
-
   ctx.font='20px Arial'; ctx.fillStyle='white';
   ctx.fillText('Click anywhere or press SPACE to start', W/2, H/2+20);
-
   ctx.font='14px Arial'; ctx.fillStyle='#808080';
   const tips=[
     'Click tower buttons at the bottom to select',
@@ -420,11 +434,12 @@ function drawMenu() {
 function drawGameOver() {
   ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,0,W,H);
   ctx.textAlign='center';
-  ctx.font='bold 52px Arial';
-  ctx.fillStyle=won?'#ffd700':'#dc3232';
-  ctx.fillText(won?'VICTORY!':'GAME OVER', W/2, H/2-20);
+  ctx.font='bold 52px Arial'; ctx.fillStyle='#dc3232';
+  ctx.fillText('GAME OVER', W/2, H/2-40);
+  ctx.font='24px Arial'; ctx.fillStyle='#ffd700';
+  ctx.fillText(`Reached Level ${waveIndex+1}`, W/2, H/2+5);
   ctx.font='20px Arial'; ctx.fillStyle='white';
-  ctx.fillText('Click or press SPACE to restart', W/2, H/2+25);
+  ctx.fillText('Click or press SPACE to restart', W/2, H/2+40);
   ctx.textAlign='left';
 }
 
@@ -451,12 +466,10 @@ function drawTooltip() {
   if (c.slow) lines.push(`Slow: ${Math.round(c.slow*100)}%`);
   if (c.dot) lines.push(`Poison: ${c.dot}/s`);
   if (c.laser) lines.push('Continuous beam');
-
   const bw=130, lh=16, bh=lines.length*lh+10;
   let bx=mouseX+15, by=mouseY-bh/2;
   if (bx+bw>W) bx=mouseX-bw-15;
   if (by+bh>H-UI_H) by=H-UI_H-bh;
-
   ctx.fillStyle='rgba(20,20,30,0.92)';
   ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,4); ctx.fill();
   ctx.strokeStyle='#505064'; ctx.lineWidth=1; ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,4); ctx.stroke();
@@ -483,16 +496,9 @@ canvas.addEventListener('mousemove', e => {
   mouseY=(e.clientY-r.top)*(H/r.height);
 });
 
-function resetGrid() {
-  grid = Array.from({length:ROWS}, () => Array(COLS).fill(0));
-  PATH_TILES.forEach(([x,y]) => grid[y][x] = 1);
-  grid[5][0] = 2;
-  grid[4][19] = 3;
-}
-
 function fullReset() {
   gold=150; lives=20; towers=[]; enemies=[]; projectiles=[]; particles=[]; lasers=[];
-  waveIndex=0; waveActive=false; spawnQueue=[]; spawnTimer=0; waveDelay=0; pendingWave=false;
+  waveIndex=0; waveActive=false; spawnQueue=[]; spawnTimer=0; waveDelay=0; pendingWave=false; waveSent=false;
   resetGrid();
   state='playing';
 }
@@ -505,6 +511,11 @@ canvas.addEventListener('click', e => {
   if (state==='gameover') { fullReset(); return; }
 
   if (my >= H-UI_H) {
+    const trashX = W-50, trashY = H-UI_H+15;
+    if (mx>=trashX && mx<=trashX+35 && my>=trashY && my<=trashY+35) {
+      fullReset();
+      return;
+    }
     const types=Object.keys(TOWERS);
     const btnW=70, gap=5, startX=15;
     types.forEach((type,i) => {
