@@ -25,6 +25,14 @@ function createPost(title,body,image){
   posts.unshift({id:Date.now(),userId:currentUser.id,username:currentUser.username,title,body,image:image||"",created:new Date().toLocaleString(),likes:[],dislikes:[],comments:[]});
   savePosts();return{ok:true};
 }
+function updatePost(id,title,body,image){
+  let p=posts.find(x=>x.id===id);if(!p)return;
+  p.title=title;p.body=body;if(image!==undefined)p.image=image;
+  savePosts();
+}
+function deletePost(id){
+  posts=posts.filter(x=>x.id!==id);savePosts();
+}
 function toggleLike(postId){
   let p=posts.find(x=>x.id===postId);if(!p)return;
   let uid=currentUser.id;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Post</title>
+<title>Edit Post</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -21,9 +21,11 @@ input,textarea{width:100%;padding:10px;margin-bottom:12px;border:1px solid #ccc;
 textarea{min-height:200px;resize:vertical}
 button{padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px;background:#e91e63;color:#fff;font-family:'Montserrat',sans-serif}
 button:hover{background:#c2185b}
+.btn-back{background:rgba(255,255,255,0.6);color:#111;border:1px solid #ccc;margin-bottom:20px;display:inline-block}
+.btn-back:hover{background:rgba(255,255,255,0.9)}
 .error{color:#f44336;margin-bottom:12px}
+.preview{max-width:100%;max-height:200px;border-radius:8px;margin-bottom:12px}
 label{display:block;margin-bottom:8px;font-weight:600}
-.preview{max-width:100%;max-height:200px;border-radius:8px;margin-bottom:12px;display:none}
 </style>
 </head>
 <body>
@@ -33,15 +35,16 @@ label{display:block;margin-bottom:8px;font-weight:600}
   <div id="nav-links"></div>
 </nav>
 <div class="container">
-  <h1 style="margin-bottom:20px">New Post</h1>
+  <a href="index.html" class="btn btn-back">← Back</a>
+  <h1 style="margin-bottom:20px">Edit Post</h1>
   <div id="error" class="error"></div>
-  <form onsubmit="return doCreate()">
+  <form onsubmit="return doUpdate()">
     <input type="text" id="title" placeholder="Title" required>
     <textarea id="body" placeholder="Write your post..." required></textarea>
-    <label>Add a photo (optional)</label>
+    <label>Update photo (optional)</label>
     <input type="file" id="photo" accept="image/*" onchange="previewImage()">
     <img id="preview" class="preview">
-    <button type="submit">Publish</button>
+    <button type="submit">Save Changes</button>
   </form>
 </div>
 <script>
@@ -50,9 +53,18 @@ for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b
 <script src="app.js"></script>
 <script>
 if(!isLoggedIn())location.href="login.html";
-document.getElementById("nav-links").innerHTML='<a href="new_post.html">New Post</a><a href="#" onclick="logout();location.href=\'index.html\'">Logout</a>';
+document.getElementById("nav-links").innerHTML='<a href="index.html">All Posts</a><a href="new_post.html">New Post</a><a href="#" onclick="logout();location.href=\'index.html\'">Logout</a>';
+let params=new URLSearchParams(location.search);
+let postId=parseInt(params.get("id"));
+let post=posts.find(p=>p.id===postId);
+if(!post||post.userId!==currentUser.id){location.href="index.html";}
+else{
+  document.getElementById("title").value=post.title;
+  document.getElementById("body").value=post.body;
+  if(post.image){let img=document.getElementById("preview");img.src=post.image;img.style.display="block";}
+}
 function previewImage(){let f=document.getElementById("photo").files[0];if(f){let r=new FileReader();r.onload=function(e){let img=document.getElementById("preview");img.src=e.target.result;img.style.display="block";};r.readAsDataURL(f);}}
-function doCreate(){let title=document.getElementById("title").value;let body=document.getElementById("body").value;let img=document.getElementById("preview").src||"";if(!title||!body){document.getElementById("error").textContent="Title and body required.";return false;}let r=createPost(title,body,img);if(r.ok)location.href="index.html";else document.getElementById("error").textContent=r.msg;return false;}
+function doUpdate(){let t=document.getElementById("title").value;let b=document.getElementById("body").value;let img=document.getElementById("preview").src||"";if(!t||!b){document.getElementById("error").textContent="Title and body required.";return false;}updatePost(postId,t,b,img);location.href="index.html";return false;}
 </script>
 </body>
 </html>
