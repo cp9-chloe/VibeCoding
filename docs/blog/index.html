@@ -61,7 +61,7 @@ for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b
 <script>
 let navLinks=document.getElementById("nav-links");
 if(isLoggedIn()){navLinks.innerHTML='<a href="index.html">All Posts</a><a href="new_post.html">New Post</a><a href="#" onclick="logout();location.reload()">Logout</a>';}
-else{navLinks.innerHTML='<a href="login.html">Login</a><a href="register.html">Register</a>';}
+else{navLinks.innerHTML='<a href="index.html">All Posts</a><a href="login.html">Login</a><a href="register.html">Register</a>';}
 let postsDiv=document.getElementById("posts");
 if(posts.length===0){postsDiv.innerHTML='<p style="color:#777">No posts yet.</p>';}
 else{posts.forEach((p,i)=>{
