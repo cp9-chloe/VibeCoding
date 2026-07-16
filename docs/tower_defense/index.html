@@ -42,18 +42,26 @@ const ENEMIES = {
   boss:   { hp: 500, spd: 0.5, armor: 5, reward: 50, color: '#ff00ff', size: 0.45 }
 };
 
-const WAVES = [
-  [{ type:'basic', count:5, interval:1.0 }],
-  [{ type:'basic', count:5, interval:0.8 },{ type:'fast', count:3, interval:0.6 }],
-  [{ type:'fast', count:8, interval:0.5 }],
-  [{ type:'basic', count:10, interval:0.7 },{ type:'tank', count:2, interval:2.0 }],
-  [{ type:'tank', count:5, interval:1.5 },{ type:'boss', count:1, interval:3 }],
-  [{ type:'fast', count:15, interval:0.3 }],
-  [{ type:'basic', count:10, interval:0.5 },{ type:'tank', count:5, interval:1.0 },{ type:'flying', count:3, interval:1.5 }],
-  [{ type:'healer', count:3, interval:2.0 },{ type:'tank', count:8, interval:1.0 }],
-  [{ type:'fast', count:20, interval:0.2 },{ type:'flying', count:8, interval:0.4 }],
-  [{ type:'tank', count:10, interval:0.8 },{ type:'flying', count:10, interval:0.5 },{ type:'healer', count:5, interval:1.0 },{ type:'boss', count:2, interval:5 }]
-];
+function generateWave(waveNum) {
+  const n = waveNum + 1;
+  const types = Object.keys(ENEMIES);
+  const available = types.filter(t => {
+    if (t === 'boss') return n >= 5;
+    if (t === 'flying') return n >= 3;
+    if (t === 'healer') return n >= 4;
+    return true;
+  });
+  const groups = [];
+  const count = Math.floor(5 + n * 2.5);
+  const batchSize = Math.min(available.length, 1 + Math.floor(n / 3));
+  for (let i = 0; i < batchSize; i++) {
+    const type = available[(n + i) % available.length];
+    const perType = Math.max(2, Math.floor(count / batchSize));
+    groups.push({ type, count: perType, interval: Math.max(0.15, 1.0 - n * 0.04) });
+  }
+  if (n % 5 === 0) groups.push({ type: 'boss', count: Math.floor(n / 5), interval: 2.0 });
+  return groups;
+}
 
 const PATH_TILES = [
   [0,5],[1,5],[2,5],[3,5],[4,5],[5,5],[6,5],
@@ -99,7 +107,7 @@ function startWave() {
   waveActive = true;
   pendingWave = false;
   spawnQueue = [];
-  const wave = WAVES[waveIndex];
+  const wave = generateWave(waveIndex);
   wave.forEach(g => {
     for (let i=0; i<g.count; i++) {
       spawnQueue.push({type:g.type, delay: i*g.interval});
