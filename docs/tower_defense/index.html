@@ -118,12 +118,12 @@ function startWave() {
 }
 
 function createEnemy(type) {
-  const hpScale = 1 + Math.max(0, waveIndex-5)*0.05;
-  const spdScale = 1 + Math.max(0, waveIndex-5)*0.03;
+  const waveSpeed = (waveIndex + 1) * 1;
+  const hpScale = 1 + waveIndex * 0.08;
   const c = ENEMIES[type];
   return {
     type, x:path[0].x, y:path[0].y, pathIdx:0,
-    hp:c.hp*hpScale, maxHp:c.hp*hpScale, speed:c.spd*spdScale, baseSpeed:c.spd*spdScale,
+    hp:c.hp*hpScale, maxHp:c.hp*hpScale, speed:waveSpeed, baseSpeed:waveSpeed,
     armor:c.armor, reward:c.reward, color:c.color, size:c.size,
     flying:c.flying||false, healRate:c.healRate||0,
     alive:true, reachedEnd:false, slowTimer:0, slowFactor:1, poisonTimer:0, poisonDmg:0
