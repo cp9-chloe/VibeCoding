@@ -6,12 +6,17 @@
 <title>New Post</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#1a1a2e;color:#e0e0e0;font-family:Arial,sans-serif}
-nav{background:#16213e;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+body{min-height:100vh;color:#e0e0e0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460,#533483);background-size:400% 400%;animation:gradShift 12s ease infinite}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+#bubbles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bubble{position:absolute;bottom:-40px;border-radius:50%;background:rgba(255,255,255,0.05);animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0) scale(1);opacity:0.5}50%{opacity:0.3}100%{transform:translateY(-110vh) scale(0.4);opacity:0}}
+nav{position:relative;z-index:1;background:rgba(22,33,62,0.85);backdrop-filter:blur(8px);padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
 nav a{color:#e0e0e0;text-decoration:none;margin-left:16px}
-nav .brand{font-size:20px;font-weight:bold;color:#533483}
-.container{max-width:700px;margin:40px auto;padding:0 20px}
-input,textarea{width:100%;padding:10px;margin-bottom:12px;border:1px solid #333;border-radius:4px;background:#1a1a2e;color:#e0e0e0;font-size:14px}
+nav a:hover{color:#b388ff}
+nav .brand{font-size:20px;font-weight:bold;color:#b388ff}
+.container{position:relative;z-index:1;max-width:700px;margin:40px auto;padding:0 20px}
+input,textarea{width:100%;padding:10px;margin-bottom:12px;border:1px solid #333;border-radius:4px;background:rgba(26,26,46,0.8);color:#e0e0e0;font-size:14px}
 textarea{min-height:200px;resize:vertical}
 button{padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px;background:#533483;color:#fff}
 button:hover{background:#6a42a0}
@@ -19,6 +24,7 @@ button:hover{background:#6a42a0}
 </style>
 </head>
 <body>
+<div id="bubbles"></div>
 <nav>
   <a href="index.html" class="brand">Blog</a>
   <div id="nav-links"></div>
@@ -32,17 +38,14 @@ button:hover{background:#6a42a0}
     <button type="submit">Publish</button>
   </form>
 </div>
+<script>
+for(let i=0;i<20;i++){let b=document.createElement("div");b.className="bubble";b.style.left=Math.random()*100+"%";b.style.width=b.style.height=(10+Math.random()*40)+"px";b.style.animationDuration=(8+Math.random()*12)+"s";b.style.animationDelay=(Math.random()*10)+"s";document.getElementById("bubbles").appendChild(b);}
+</script>
 <script src="app.js"></script>
 <script>
 if(!isLoggedIn())location.href="login.html";
-let navLinks=document.getElementById("nav-links");
-navLinks.innerHTML='<a href="new_post.html">New Post</a><a href="#" onclick="logout();location.href=\'index.html\'">Logout</a>';
-function doCreate(){
-  let r=createPost(document.getElementById("title").value,document.getElementById("body").value);
-  if(r.ok)location.href="index.html";
-  else document.getElementById("error").textContent=r.msg;
-  return false;
-}
+document.getElementById("nav-links").innerHTML='<a href="new_post.html">New Post</a><a href="#" onclick="logout();location.href=\'index.html\'">Logout</a>';
+function doCreate(){let r=createPost(document.getElementById("title").value,document.getElementById("body").value);if(r.ok)location.href="index.html";else document.getElementById("error").textContent=r.msg;return false;}
 </script>
 </body>
 </html>
