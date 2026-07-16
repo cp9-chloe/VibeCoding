@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Blog{% endblock %}</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#1a1a2e; color:#e0e0e0; font-family:Arial,sans-serif; }
+nav { background:#16213e; padding:12px 24px; display:flex; justify-content:space-between; align-items:center; }
+nav a { color:#e0e0e0; text-decoration:none; margin-left:16px; }
+nav a:hover { color:#533483; }
+nav .brand { font-size:20px; font-weight:bold; color:#533483; }
+.container { max-width:700px; margin:40px auto; padding:0 20px; }
+.card { background:#16213e; border-radius:8px; padding:20px; margin-bottom:16px; }
+.card h2 { margin-bottom:8px; }
+.card .meta { color:#888; font-size:13px; margin-bottom:12px; }
+.card .body { line-height:1.6; }
+input, textarea { width:100%; padding:10px; margin-bottom:12px; border:1px solid #333; border-radius:4px; background:#1a1a2e; color:#e0e0e0; font-size:14px; }
+textarea { min-height:200px; resize:vertical; }
+button, .btn { padding:10px 20px; border:none; border-radius:4px; cursor:pointer; font-size:14px; text-decoration:none; display:inline-block; }
+.btn-primary { background:#533483; color:#fff; }
+.btn-primary:hover { background:#6a42a0; }
+.btn-danger { background:#f44336; color:#fff; }
+.btn-danger:hover { background:#d32f2f; }
+.error { color:#f44336; margin-bottom:12px; }
+.success { color:#4caf50; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">Blog</a>
+  <div>
+    {% if session.user_id %}
+      <a href="/post/new">New Post</a>
+      <a href="/logout">Logout</a>
+    {% else %}
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    {% endif %}
+  </div>
+</nav>
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>

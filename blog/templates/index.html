@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}All Posts{% endblock %}
+{% block content %}
+<h1 style="margin-bottom:20px;">All Posts</h1>
+{% if posts %}
+  {% for post in posts %}
+  <div class="card">
+    <h2>{{ post.title }}</h2>
+    <div class="meta">by {{ post.username }} &middot; {{ post.created }}</div>
+    <div class="body">{{ post.body }}</div>
+  </div>
+  {% endfor %}
+{% else %}
+  <p style="color:#888;">No posts yet.</p>
+{% endif %}
+{% endblock %}
