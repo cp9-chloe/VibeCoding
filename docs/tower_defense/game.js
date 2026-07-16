@@ -1,7 +1,7 @@
 const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");
 const W=canvas.width=960,H=canvas.height=640;
 const COLS=18,ROWS=12,CELL=48;
-let state="menu",money=50,lives=20,waveIndex=0,gameSpeed=1,tick=0;
+let state="menu",gold=50,lives=20,waveIndex=0,gameSpeed=1,tick=0;
 let enemies=[],towers=[],projectiles=[],particles=[];
 let selectedTower=null,hoveredCell=null,deleteMode=false;
 let towersUnlocked=8;
@@ -64,7 +64,7 @@ function updateEnemies(){
     let e=enemies[i];
     if(e.slowTimer>0)e.slowTimer--;else e.slow=0;
     if(e.dotTimer>0){e.dotTimer--;e.hp-=e.dot;}
-    if(e.hp<=0){money+=e.reward;particles.push({x:e.x,y:e.y,life:30,color:"#FFEB3B"});enemies.splice(i,1);continue;}
+    if(e.hp<=0){gold+=e.reward;particles.push({x:e.x,y:e.y,life:30,color:"#FFEB3B"});enemies.splice(i,1);continue;}
     let spd=e.speed*(1-e.slow)*gameSpeed;
     if(e.pathIndex<PATH.length-1){
       let tgt=PATH[e.pathIndex+1];
@@ -140,7 +140,7 @@ function drawMenu(){
   ctx.fillStyle="#fff";ctx.font="bold 20px Arial";ctx.fillText("PLAY",W/2,252);
   ctx.fillStyle="#666";ctx.font="14px Arial";
   ctx.fillText("Click towers on the right panel to place them",W/2,310);
-  ctx.fillText("Earn money by defeating enemies",W/2,330);
+  ctx.fillText("Earn gold by defeating enemies",W/2,330);
   ctx.fillText("Towers unlock every 5 waves!",W/2,350);
 }
 function drawGame(){
@@ -195,7 +195,7 @@ function drawGame(){
   }
   ctx.fillStyle="#222";ctx.fillRect(864,0,96,640);
   ctx.fillStyle="#FFD700";ctx.font="bold 14px Arial";ctx.textAlign="left";
-  ctx.fillText("Money: "+money,870,25);
+  ctx.fillText("Gold: "+gold,870,25);
   ctx.fillText("Lives: "+lives,870,45);
   ctx.fillText("Wave: "+(waveIndex+1),870,65);
   ctx.fillStyle="#888";ctx.font="11px Arial";
@@ -203,10 +203,10 @@ function drawGame(){
   let startY=100;
   for(let i=0;i<towersUnlocked&&i<TOWER_DEFS.length;i++){
     let t=TOWER_DEFS[i],y=startY+i*22;
-    ctx.fillStyle=t.cost<=money?"#333":"#222";
+    ctx.fillStyle=t.cost<=gold?"#333":"#222";
     ctx.fillRect(868,y,92,20);
     ctx.fillStyle=t.color;ctx.fillRect(870,y+2,16,16);
-    ctx.fillStyle=t.cost<=money?"#fff":"#666";ctx.font="10px Arial";
+    ctx.fillStyle=t.cost<=gold?"#fff":"#666";ctx.font="10px Arial";
     ctx.fillText(t.name+" $"+t.cost,890,y+14);
   }
   if(deleteMode){
@@ -242,7 +242,7 @@ canvas.addEventListener("click",e=>{
   }
   if(state==="gameover"){
     if(mx>W/2-100&&mx<W/2+100&&my>340&&my<390){
-      money=50;lives=20;waveIndex=0;enemies=[];towers=[];projectiles=[];particles=[];
+      gold=50;lives=20;waveIndex=0;enemies=[];towers=[];projectiles=[];particles=[];
       towersUnlocked=8;selectedTower=null;deleteMode=false;
       state="playing";nextWave();
     }
@@ -252,16 +252,16 @@ canvas.addEventListener("click",e=>{
     let c=Math.floor(mx/CELL),r=Math.floor(my/CELL);
     if(deleteMode){
       let idx=towers.findIndex(t=>t.col===c&&t.row===r);
-      if(idx>=0){money+=Math.floor(towers[idx].cost/2);towers.splice(idx,1);}
+      if(idx>=0){gold+=Math.floor(towers[idx].cost/2);towers.splice(idx,1);}
       deleteMode=false;return;
     }
     let key=c+","+r;
     if(!pathSet.has(key)){
       let existing=towers.find(t=>t.col===c&&t.row===r);
       if(existing){selectedTower=selectedTower===existing?null:existing;return;}
-      if(selectedDef&&money>=selectedDef.cost){
+      if(selectedDef&&gold>=selectedDef.cost){
         towers.push({col:c,row:r,...selectedDef,cooldown:0,target:null});
-        money-=selectedDef.cost;
+        gold-=selectedDef.cost;
       }
     }
   }else{
