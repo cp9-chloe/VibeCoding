@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;color:#e0e0e0;font-family:Arial,sans-serif}
+nav{background:#16213e;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+nav a{color:#e0e0e0;text-decoration:none;margin-left:16px}
+nav a:hover{color:#533483}
+nav .brand{font-size:20px;font-weight:bold;color:#533483}
+.container{max-width:700px;margin:40px auto;padding:0 20px}
+.card{background:#16213e;border-radius:8px;padding:20px;margin-bottom:16px}
+.card h2{margin-bottom:8px}
+.card .meta{color:#888;font-size:13px;margin-bottom:12px}
+.card .body{line-height:1.6}
+.btn{padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px;text-decoration:none;display:inline-block}
+.btn-primary{background:#533483;color:#fff}
+.btn-primary:hover{background:#6a42a0}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">Blog</a>
+  <div id="nav-links"></div>
+</nav>
+<div class="container">
+  <h1 style="margin-bottom:20px">All Posts</h1>
+  <div id="posts"></div>
+</div>
+<script src="app.js"></script>
+<script>
+let navLinks=document.getElementById("nav-links");
+if(isLoggedIn()){navLinks.innerHTML='<a href="new_post.html">New Post</a><a href="#" onclick="logout();location.reload()">Logout</a>';}
+else{navLinks.innerHTML='<a href="login.html">Login</a><a href="register.html">Register</a>';}
+let postsDiv=document.getElementById("posts");
+if(posts.length===0){postsDiv.innerHTML='<p style="color:#888">No posts yet.</p>';}
+else{posts.forEach(p=>{postsDiv.innerHTML+='<div class="card"><h2>'+p.title+'</h2><div class="meta">by '+p.username+' &middot; '+p.created+'</div><div class="body">'+p.body+'</div></div>';});}
+</script>
+</body>
+</html>

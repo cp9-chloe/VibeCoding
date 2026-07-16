@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Post</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;color:#e0e0e0;font-family:Arial,sans-serif}
+nav{background:#16213e;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+nav a{color:#e0e0e0;text-decoration:none;margin-left:16px}
+nav .brand{font-size:20px;font-weight:bold;color:#533483}
+.container{max-width:700px;margin:40px auto;padding:0 20px}
+input,textarea{width:100%;padding:10px;margin-bottom:12px;border:1px solid #333;border-radius:4px;background:#1a1a2e;color:#e0e0e0;font-size:14px}
+textarea{min-height:200px;resize:vertical}
+button{padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px;background:#533483;color:#fff}
+button:hover{background:#6a42a0}
+.error{color:#f44336;margin-bottom:12px}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="brand">Blog</a>
+  <div id="nav-links"></div>
+</nav>
+<div class="container">
+  <h1 style="margin-bottom:20px">New Post</h1>
+  <div id="error" class="error"></div>
+  <form onsubmit="return doCreate()">
+    <input type="text" id="title" placeholder="Title" required>
+    <textarea id="body" placeholder="Write your post..." required></textarea>
+    <button type="submit">Publish</button>
+  </form>
+</div>
+<script src="app.js"></script>
+<script>
+if(!isLoggedIn())location.href="login.html";
+let navLinks=document.getElementById("nav-links");
+navLinks.innerHTML='<a href="new_post.html">New Post</a><a href="#" onclick="logout();location.href=\'index.html\'">Logout</a>';
+function doCreate(){
+  let r=createPost(document.getElementById("title").value,document.getElementById("body").value);
+  if(r.ok)location.href="index.html";
+  else document.getElementById("error").textContent=r.msg;
+  return false;
+}
+</script>
+</body>
+</html>
