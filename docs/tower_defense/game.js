@@ -195,7 +195,7 @@ function drawGame(){
   }
   ctx.fillStyle="#222";ctx.fillRect(864,0,96,640);
   ctx.fillStyle="#FFD700";ctx.font="bold 14px Arial";ctx.textAlign="left";
-  ctx.fillText("Gold: "+money,870,25);
+  ctx.fillText("Money: "+money,870,25);
   ctx.fillText("Lives: "+lives,870,45);
   ctx.fillText("Wave: "+(waveIndex+1),870,65);
   ctx.fillStyle="#888";ctx.font="11px Arial";
