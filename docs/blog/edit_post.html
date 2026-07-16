@@ -32,10 +32,14 @@ label{display:block;margin-bottom:8px;font-weight:600}
 <div id="bubbles"></div>
 <nav>
   <a href="index.html" class="brand">Blog</a>
-  <div id="nav-links"></div>
+  <div>
+    <a href="index.html">All Posts</a>
+    <a href="new_post.html">New Post</a>
+    <a href="#" onclick="logout();location.href='index.html'">Logout</a>
+  </div>
 </nav>
 <div class="container">
-  <a href="index.html" class="btn btn-back">← Back</a>
+  <a href="index.html" class="btn btn-back">&larr; Back</a>
   <h1 style="margin-bottom:20px">Edit Post</h1>
   <div id="error" class="error"></div>
   <form onsubmit="return doUpdate()">
@@ -52,12 +56,11 @@ for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b
 </script>
 <script src="app.js"></script>
 <script>
-if(!isLoggedIn())location.href="login.html";
-document.getElementById("nav-links").innerHTML='<a href="index.html">All Posts</a><a href="new_post.html">New Post</a><a href="#" onclick="logout();location.href=\'index.html\'">Logout</a>';
+if(typeof isLoggedIn==="function"&&!isLoggedIn())location.href="login.html";
 let params=new URLSearchParams(location.search);
 let postId=parseInt(params.get("id"));
-let post=posts.find(p=>p.id===postId);
-if(!post||post.userId!==currentUser.id){location.href="index.html";}
+let post=typeof posts!=="undefined"?posts.find(p=>p.id===postId):null;
+if(!post||!currentUser||post.userId!==currentUser.id){location.href="index.html";}
 else{
   document.getElementById("title").value=post.title;
   document.getElementById("body").value=post.body;
