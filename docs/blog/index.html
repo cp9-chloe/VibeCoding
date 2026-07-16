@@ -25,14 +25,12 @@ nav .brand{font-size:20px;font-weight:700;color:#e91e63}
 .btn{padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px;text-decoration:none;display:inline-block;font-family:'Montserrat',sans-serif}
 .btn-primary{background:#e91e63;color:#fff}
 .btn-primary:hover{background:#c2185b}
-.btn-back{background:rgba(255,255,255,0.6);color:#111;border:1px solid #ccc;margin-bottom:20px;display:inline-block}
-.btn-back:hover{background:rgba(255,255,255,0.9)}
 .icon-btn{width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;margin-right:6px}
 .edit-btn{background:#2196f3;color:#fff}
 .edit-btn:hover{background:#1976d2}
 .del-btn{background:#f44336;color:#fff}
 .del-btn:hover{background:#d32f2f}
-.like-btn,.dislike-btn,.comment-btn{background:none;border:1px solid #ccc;border-radius:4px;padding:5px 10px;cursor:pointer;margin-right:8px;font-family:'Montserrat',sans-serif;font-size:13px}
+.like-btn,.dislike-btn{background:none;border:1px solid #ccc;border-radius:4px;padding:5px 10px;cursor:pointer;margin-right:8px;font-family:'Montserrat',sans-serif;font-size:13px}
 .like-btn:hover{border-color:#4caf50;color:#4caf50}
 .dislike-btn:hover{border-color:#f44336;color:#f44336}
 .comments{margin-top:12px;padding-top:12px;border-top:1px solid #ddd}
@@ -42,13 +40,20 @@ nav .brand{font-size:20px;font-weight:700;color:#e91e63}
 .comment-input input{flex:1;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-family:'Montserrat',sans-serif}
 .comment-input button{padding:6px 12px}
 .actions{margin-top:12px;display:flex;align-items:center}
+.hide{display:none!important}
 </style>
 </head>
 <body>
 <div id="bubbles"></div>
 <nav>
-  <a href="/" class="brand">Blog</a>
-  <div id="nav-links"></div>
+  <a href="index.html" class="brand">Blog</a>
+  <div>
+    <a href="index.html">All Posts</a>
+    <a href="login.html" id="nav-login">Login</a>
+    <a href="register.html" id="nav-register">Register</a>
+    <a href="new_post.html" id="nav-new" class="hide">New Post</a>
+    <a href="#" id="nav-logout" class="hide" onclick="logout();location.reload()">Logout</a>
+  </div>
 </nav>
 <div class="container">
   <h1 style="margin-bottom:20px">All Posts</h1>
@@ -59,17 +64,20 @@ for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b
 </script>
 <script src="app.js"></script>
 <script>
-let navLinks=document.getElementById("nav-links");
-if(isLoggedIn()){navLinks.innerHTML='<a href="index.html">All Posts</a><a href="new_post.html">New Post</a><a href="#" onclick="logout();location.reload()">Logout</a>';}
-else{navLinks.innerHTML='<a href="index.html">All Posts</a><a href="login.html">Login</a><a href="register.html">Register</a>';}
+if(typeof isLoggedIn==="function"&&isLoggedIn()){
+  document.getElementById("nav-login").classList.add("hide");
+  document.getElementById("nav-register").classList.add("hide");
+  document.getElementById("nav-new").classList.remove("hide");
+  document.getElementById("nav-logout").classList.remove("hide");
+}
 let postsDiv=document.getElementById("posts");
-if(posts.length===0){postsDiv.innerHTML='<p style="color:#777">No posts yet.</p>';}
-else{posts.forEach((p,i)=>{
+if(typeof posts!=="undefined"&&posts.length===0){postsDiv.innerHTML='<p style="color:#777">No posts yet.</p>';}
+else if(typeof posts!=="undefined"){posts.forEach((p,i)=>{
   let imgHtml=p.image?'<img src="'+p.image+'">':"";
-  let likes=p.likes.length,dislikes=p.dislikes.length;
-  let likeClass=currentUser&&p.likes.includes(currentUser.id)?'style="color:#4caf50;border-color:#4caf50"':"";
-  let dislikeClass=currentUser&&p.dislikes.includes(currentUser.id)?'style="color:#f44336;border-color:#f44336"':"";
-  let ownerBtns=currentUser&&currentUser.id===p.userId?'<span style="margin-left:auto"><button class="icon-btn edit-btn" onclick="location.href=\'edit_post.html?id='+p.id+'\'">✏</button><button class="icon-btn del-btn" onclick="doDelete('+p.id+')">🗑</button></span>':"";
+  let likes=p.likes?p.likes.length:0,dislikes=p.dislikes?p.dislikes.length:0;
+  let likeClass=currentUser&&p.likes&&p.likes.includes(currentUser.id)?'style="color:#4caf50;border-color:#4caf50"':"";
+  let dislikeClass=currentUser&&p.dislikes&&p.dislikes.includes(currentUser.id)?'style="color:#f44336;border-color:#f44336"':"";
+  let ownerBtns=currentUser&&currentUser.id===p.userId?'<span style="margin-left:auto"><button class="icon-btn edit-btn" onclick="location.href=\'edit_post.html?id='+p.id+'\'">&#9998;</button><button class="icon-btn del-btn" onclick="doDelete('+p.id+')">&#128465;</button></span>':"";
   let commentsHtml='';
   if(p.comments&&p.comments.length>0){commentsHtml='<div class="comments">'+p.comments.map(c=>'<div class="comment"><strong>'+c.username+'</strong> <span class="cmeta">'+c.created+'</span><br>'+c.text+'</div>').join('')+'</div>';}
   let commentForm=currentUser?'<div class="comment-input"><input id="ci'+p.id+'" placeholder="Add a comment..."><button class="btn btn-primary" onclick="submitComment('+p.id+')">Post</button></div>':"";
