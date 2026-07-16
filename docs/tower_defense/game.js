@@ -31,7 +31,7 @@ const TOWER_DEFS=[
   {name:"Mortar",cost:45,range:4,dmg:30,rate:60,color:"#5D4037",projColor:"#8D6E63",type:"projectile",splash:1.5,desc:"Long range splash",unlockWave:10},
   {name:"Vortex",cost:90,range:3,dmg:15,rate:8,color:"#AA00FF",projColor:"#D500F9",type:"laser",desc:"Devastating beam",unlockWave:15},
   {name:"Mega",cost:100,range:4,dmg:200,rate:150,color:"#D50000",projColor:"#FF1744",type:"projectile",splash:2.0,desc:"Mega cannon",unlockWave:15},
-  {name:"Blaze",cost:70,range:2.5,dmg:10,rate:6,color:"#FF6D00",projColor:"#FF9E80",type:"projectile",dot:8,desc:"Inferno burn",unlockWave:15},
+  {name:"Blaze",cost:70,range:2.5,dmg:10,rate:10,color:"#FF6D00",projColor:"#FF9E80",type:"projectile",dot:8,desc:"Inferno burn",unlockWave:15},
   {name:"Shard",cost:55,range:3,dmg:7,rate:5,color:"#00E5FF",projColor:"#84FFFF",type:"projectile",slow:0.95,desc:"Crystal freeze",unlockWave:15},
   {name:"Pulse",cost:85,range:3.5,dmg:20,rate:10,color:"#6200EA",projColor:"#B388FF",type:"laser",desc:"Pulse laser",unlockWave:15},
   {name:"Omega",cost:150,range:5,dmg:300,rate:180,color:"#212121",projColor:"#FFD740",type:"projectile",splash:3.0,desc:"Ultimate tower",unlockWave:20},
