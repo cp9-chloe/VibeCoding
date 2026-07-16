@@ -103,7 +103,7 @@ function addParticles(x,y,color,count) {
 }
 
 function startWave() {
-  if (waveIndex >= WAVES.length || waveActive) return;
+  if (waveActive) return;
   waveActive = true;
   pendingWave = false;
   spawnQueue = [];
@@ -262,10 +262,9 @@ function update(dt) {
     pendingWave = false;
     gold += 100;
     waveIndex++;
-    if (waveIndex >= WAVES.length && enemies.length === 0) { state='gameover'; won=true; }
   }
 
-  if (!waveActive && !pendingWave && spawnQueue.length === 0 && enemies.length === 0 && waveIndex < WAVES.length) {
+  if (!waveActive && !pendingWave && spawnQueue.length === 0 && enemies.length === 0) {
     pendingWave = true;
   }
 
@@ -370,10 +369,9 @@ function drawUI() {
   ctx.fillText(`Lives: ${lives}`, 120, 30);
   ctx.fillStyle='white';
   ctx.font='16px Arial';
-  const waveText = waveIndex < WAVES.length ? `Wave ${waveIndex+1}/${WAVES.length}` : 'All waves done!';
-  ctx.fillText(waveText, 280, 28);
+  ctx.fillText(`Wave ${waveIndex+1}`, 280, 28);
 
-  if (!waveActive && waveIndex < WAVES.length) {
+  if (!waveActive) {
     ctx.fillStyle='#66ff66';
     ctx.fillText('[SPACE] Send Wave', 480, 28);
   }
@@ -555,7 +553,7 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
     if (state==='menu') { fullReset(); return; }
     if (state==='gameover') { fullReset(); return; }
-    if (state==='playing' && !waveActive && waveIndex<WAVES.length) startWave();
+    if (state==='playing' && !waveActive) startWave();
   }
   if (e.code==='Escape') selectedType=null;
 });
