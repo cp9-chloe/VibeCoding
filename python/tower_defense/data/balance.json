@@ -1,0 +1,9 @@
+{
+  "towers": {
+    "arrow": {"cost": 25, "damage": 10, "range": 3, "fire_rate": 0.5, "color": [50, 200, 50], "name": "Arrow"},
+    "cannon": {"cost": 50, "damage": 30, "range": 2.5, "fire_rate": 1.5, "color": [220, 140, 50], "name": "Cannon", "splash": 1.0},
+    "ice": {"cost": 35, "damage": 5, "range": 3, "fire_rate": 0.8, "color": [50, 200, 200], "name": "Ice", "slow": 0.5},
+    "sniper": {"cost": 60, "damage": 50, "range": 5, "fire_rate": 2.5, "color": [160, 60, 200], "name": "Sniper"},
+    "tesla": {"cost": 75, "damage": 15, "range": 3, "fire_rate": 1.0, "color": [50, 100, 220], "name": "Tesla", "chain": 3}
+  }
+}

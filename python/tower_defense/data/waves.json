@@ -1,0 +1,14 @@
+{
+  "waves": [
+    {"id": 1, "enemies": [{"type": "basic", "count": 5, "interval": 1.0}], "start_delay": 2.0},
+    {"id": 2, "enemies": [{"type": "basic", "count": 5, "interval": 0.8}, {"type": "fast", "count": 3, "interval": 0.6}], "start_delay": 2.0},
+    {"id": 3, "enemies": [{"type": "fast", "count": 8, "interval": 0.5}], "start_delay": 2.0},
+    {"id": 4, "enemies": [{"type": "basic", "count": 10, "interval": 0.7}, {"type": "tank", "count": 2, "interval": 2.0}], "start_delay": 2.0},
+    {"id": 5, "enemies": [{"type": "tank", "count": 5, "interval": 1.5}], "start_delay": 2.0},
+    {"id": 6, "enemies": [{"type": "fast", "count": 15, "interval": 0.3}], "start_delay": 2.0},
+    {"id": 7, "enemies": [{"type": "basic", "count": 10, "interval": 0.5}, {"type": "tank", "count": 5, "interval": 1.0}, {"type": "flying", "count": 3, "interval": 1.5}], "start_delay": 2.0},
+    {"id": 8, "enemies": [{"type": "healer", "count": 3, "interval": 2.0}, {"type": "tank", "count": 8, "interval": 1.0}], "start_delay": 2.0},
+    {"id": 9, "enemies": [{"type": "fast", "count": 20, "interval": 0.2}], "start_delay": 2.0},
+    {"id": 10, "enemies": [{"type": "tank", "count": 10, "interval": 0.8}, {"type": "flying", "count": 10, "interval": 0.5}, {"type": "healer", "count": 5, "interval": 1.0}], "start_delay": 3.0}
+  ]
+}
