@@ -54,11 +54,33 @@ label{display:block;margin-bottom:8px;font-weight:600}
 <script>
 for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b.style.left=Math.random()*100+"%";b.style.width=b.style.height=(10+Math.random()*50)+"px";b.style.animationDuration=(8+Math.random()*14)+"s";b.style.animationDelay=(Math.random()*10)+"s";document.getElementById("bubbles").appendChild(b);}
 </script>
-<script src="app.js"></script>
-<script>
-if(typeof isLoggedIn==="function"&&!isLoggedIn())location.href="login.html";
-function previewImage(){let f=document.getElementById("photo").files[0];if(f){let r=new FileReader();r.onload=function(e){let img=document.getElementById("preview");img.src=e.target.result;img.style.display="block";};r.readAsDataURL(f);}}
-function doCreate(){let title=document.getElementById("title").value;let body=document.getElementById("body").value;let img=document.getElementById("preview").src||"";if(!title||!body){document.getElementById("error").textContent="Title and body required.";return false;}let r=createPost(title,body,img);if(r.ok)location.href="index.html";else document.getElementById("error").textContent=r.msg;return false;}
+<script src="firebase-config.js"></script>
+<script type="module">
+import { isLoggedIn, createPost, logout } from "./app.js";
+if (!isLoggedIn()) location.href = "login.html";
+window.logout = logout;
+window.previewImage = function() {
+  const f = document.getElementById("photo").files[0];
+  if (f) {
+    const r = new FileReader();
+    r.onload = function(e) {
+      const img = document.getElementById("preview");
+      img.src = e.target.result;
+      img.style.display = "block";
+    };
+    r.readAsDataURL(f);
+  }
+};
+window.doCreate = async function() {
+  const title = document.getElementById("title").value;
+  const body = document.getElementById("body").value;
+  const img = document.getElementById("preview").src || "";
+  if (!title || !body) { document.getElementById("error").textContent = "Title and body required."; return false; }
+  const r = await createPost(title, body, img);
+  if (r.ok) location.href = "index.html";
+  else document.getElementById("error").textContent = r.msg;
+  return false;
+};
 </script>
 </body>
 </html>

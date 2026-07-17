@@ -54,20 +54,45 @@ label{display:block;margin-bottom:8px;font-weight:600}
 <script>
 for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b.style.left=Math.random()*100+"%";b.style.width=b.style.height=(10+Math.random()*50)+"px";b.style.animationDuration=(8+Math.random()*14)+"s";b.style.animationDelay=(Math.random()*10)+"s";document.getElementById("bubbles").appendChild(b);}
 </script>
-<script src="app.js"></script>
-<script>
-if(typeof isLoggedIn==="function"&&!isLoggedIn())location.href="login.html";
-let params=new URLSearchParams(location.search);
-let postId=parseInt(params.get("id"));
-let post=typeof posts!=="undefined"?posts.find(p=>p.id===postId):null;
-if(!post||!currentUser||post.userId!==currentUser.id){location.href="index.html";}
-else{
-  document.getElementById("title").value=post.title;
-  document.getElementById("body").value=post.body;
-  if(post.image){let img=document.getElementById("preview");img.src=post.image;img.style.display="block";}
-}
-function previewImage(){let f=document.getElementById("photo").files[0];if(f){let r=new FileReader();r.onload=function(e){let img=document.getElementById("preview");img.src=e.target.result;img.style.display="block";};r.readAsDataURL(f);}}
-function doUpdate(){let t=document.getElementById("title").value;let b=document.getElementById("body").value;let img=document.getElementById("preview").src||"";if(!t||!b){document.getElementById("error").textContent="Title and body required.";return false;}updatePost(postId,t,b,img);location.href="index.html";return false;}
+<script src="firebase-config.js"></script>
+<script type="module">
+import { isLoggedIn, updatePost, listenPosts, logout } from "./app.js";
+if (!isLoggedIn()) location.href = "login.html";
+window.logout = logout;
+const params = new URLSearchParams(location.search);
+const postId = params.get("id");
+listenPosts((allPosts) => {
+  const post = allPosts.find(p => p.id === postId);
+  if (!post || !isLoggedIn()) { location.href = "index.html"; return; }
+  document.getElementById("title").value = post.title;
+  document.getElementById("body").value = post.body;
+  if (post.image) {
+    const img = document.getElementById("preview");
+    img.src = post.image;
+    img.style.display = "block";
+  }
+});
+window.previewImage = function() {
+  const f = document.getElementById("photo").files[0];
+  if (f) {
+    const r = new FileReader();
+    r.onload = function(e) {
+      const img = document.getElementById("preview");
+      img.src = e.target.result;
+      img.style.display = "block";
+    };
+    r.readAsDataURL(f);
+  }
+};
+window.doUpdate = async function() {
+  const t = document.getElementById("title").value;
+  const b = document.getElementById("body").value;
+  const img = document.getElementById("preview").src || "";
+  if (!t || !b) { document.getElementById("error").textContent = "Title and body required."; return false; }
+  await updatePost(postId, t, b, img);
+  location.href = "index.html";
+  return false;
+};
 </script>
 </body>
 </html>

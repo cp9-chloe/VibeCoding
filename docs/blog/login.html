@@ -49,9 +49,15 @@ button:hover{background:#c2185b}
 <script>
 for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b.style.left=Math.random()*100+"%";b.style.width=b.style.height=(10+Math.random()*50)+"px";b.style.animationDuration=(8+Math.random()*14)+"s";b.style.animationDelay=(Math.random()*10)+"s";document.getElementById("bubbles").appendChild(b);}
 </script>
-<script src="app.js"></script>
-<script>
-function doLogin(){let r=login(document.getElementById("username").value,document.getElementById("password").value);if(r.ok)location.href="index.html";else document.getElementById("error").textContent=r.msg;return false;}
+<script src="firebase-config.js"></script>
+<script type="module">
+import { login } from "./app.js";
+window.doLogin = async function() {
+  const r = await login(document.getElementById("username").value, document.getElementById("password").value);
+  if (r.ok) location.href = "index.html";
+  else document.getElementById("error").textContent = r.msg;
+  return false;
+};
 </script>
 </body>
 </html>

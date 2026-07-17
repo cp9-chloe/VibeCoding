@@ -50,9 +50,18 @@ button:hover{background:#c2185b}
 <script>
 for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b.style.left=Math.random()*100+"%";b.style.width=b.style.height=(10+Math.random()*50)+"px";b.style.animationDuration=(8+Math.random()*14)+"s";b.style.animationDelay=(Math.random()*10)+"s";document.getElementById("bubbles").appendChild(b);}
 </script>
-<script src="app.js"></script>
-<script>
-function doRegister(){let pw=document.getElementById("password").value;let cp=document.getElementById("confirm").value;if(pw!==cp){document.getElementById("error").textContent="Passwords do not match.";return false;}let r=register(document.getElementById("username").value,pw);if(r.ok)location.href="login.html";else{let e=document.getElementById("error");e.textContent=r.msg;e.style.color="#f44336";e.style.fontFamily="'Montserrat',sans-serif";e.style.fontWeight="700";}return false;}
+<script src="firebase-config.js"></script>
+<script type="module">
+import { register } from "./app.js";
+window.doRegister = async function() {
+  const pw = document.getElementById("password").value;
+  const cp = document.getElementById("confirm").value;
+  if (pw !== cp) { document.getElementById("error").textContent = "Passwords do not match."; return false; }
+  const r = await register(document.getElementById("username").value, pw);
+  if (r.ok) location.href = "login.html";
+  else document.getElementById("error").textContent = r.msg;
+  return false;
+};
 </script>
 </body>
 </html>

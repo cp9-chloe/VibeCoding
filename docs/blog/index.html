@@ -62,31 +62,40 @@ nav .brand{font-size:20px;font-weight:700;color:#e91e63}
 <script>
 for(let i=0;i<25;i++){let b=document.createElement("div");b.className="bubble";b.style.left=Math.random()*100+"%";b.style.width=b.style.height=(10+Math.random()*50)+"px";b.style.animationDuration=(8+Math.random()*14)+"s";b.style.animationDelay=(Math.random()*10)+"s";document.getElementById("bubbles").appendChild(b);}
 </script>
-<script src="app.js"></script>
-<script>
-if(typeof isLoggedIn==="function"&&isLoggedIn()){
-  document.getElementById("nav-login").classList.add("hide");
-  document.getElementById("nav-register").classList.add("hide");
-  document.getElementById("nav-new").classList.remove("hide");
-  document.getElementById("nav-logout").classList.remove("hide");
+<script src="firebase-config.js"></script>
+<script type="module" src="app.js"></script>
+<script type="module">
+import { isLoggedIn, logout, toggleLike, toggleDislike, addComment, listenPosts } from "./app.js";
+
+function renderPosts(allPosts) {
+  const postsDiv = document.getElementById("posts");
+  if (!allPosts.length) { postsDiv.innerHTML = '<p style="color:#777">No posts yet.</p>'; return; }
+  postsDiv.innerHTML = "";
+  allPosts.forEach((p) => {
+    let imgHtml = p.image ? '<img src="' + p.image + '">' : "";
+    let likes = p.likes ? p.likes.length : 0;
+    let dislikes = p.dislikes ? p.dislikes.length : 0;
+    let likeClass = currentUser && p.likes && p.likes.includes(currentUser.uid) ? 'style="color:#4caf50;border-color:#4caf50"' : "";
+    let dislikeClass = currentUser && p.dislikes && p.dislikes.includes(currentUser.uid) ? 'style="color:#f44336;border-color:#f44336"' : "";
+    let ownerBtns = currentUser && currentUser.uid === p.userId ? '<span style="margin-left:auto"><button class="icon-btn edit-btn" onclick="location.href=\'edit_post.html?id=' + p.id + '\'">&#9998;</button><button class="icon-btn del-btn" onclick="doDelete(\'' + p.id + '\')">&#128465;</button></span>' : "";
+    let commentsHtml = "";
+    if (p.comments && p.comments.length > 0) {
+      commentsHtml = '<div class="comments">' + p.comments.map(c => '<div class="comment"><strong>' + c.username + '</strong> <span class="cmeta">' + c.created + '</span><br>' + c.text + '</div>').join('') + '</div>';
+    }
+    let commentForm = currentUser ? '<div class="comment-input"><input id="ci' + p.id + '" placeholder="Add a comment..."><button class="btn btn-primary" onclick="submitComment(\'' + p.id + '\')">Post</button></div>' : "";
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = '<h2>' + p.title + '</h2><div class="meta">by ' + p.username + ' &middot; ' + p.created + '</div><div class="body">' + p.body + '</div>' + imgHtml + '<div class="actions"><button class="like-btn" ' + likeClass + ' onclick="doLike(\'' + p.id + '\')">👍 ' + likes + '</button><button class="dislike-btn" ' + dislikeClass + ' onclick="doDislike(\'' + p.id + '\')">👎 ' + dislikes + '</button>' + ownerBtns + '</div>' + commentsHtml + commentForm;
+    postsDiv.appendChild(card);
+  });
 }
-let postsDiv=document.getElementById("posts");
-if(typeof posts!=="undefined"&&posts.length===0){postsDiv.innerHTML='<p style="color:#777">No posts yet.</p>';}
-else if(typeof posts!=="undefined"){posts.forEach((p,i)=>{
-  let imgHtml=p.image?'<img src="'+p.image+'">':"";
-  let likes=p.likes?p.likes.length:0,dislikes=p.dislikes?p.dislikes.length:0;
-  let likeClass=currentUser&&p.likes&&p.likes.includes(currentUser.id)?'style="color:#4caf50;border-color:#4caf50"':"";
-  let dislikeClass=currentUser&&p.dislikes&&p.dislikes.includes(currentUser.id)?'style="color:#f44336;border-color:#f44336"':"";
-  let ownerBtns=currentUser&&currentUser.id===p.userId?'<span style="margin-left:auto"><button class="icon-btn edit-btn" onclick="location.href=\'edit_post.html?id='+p.id+'\'">&#9998;</button><button class="icon-btn del-btn" onclick="doDelete('+p.id+')">&#128465;</button></span>':"";
-  let commentsHtml='';
-  if(p.comments&&p.comments.length>0){commentsHtml='<div class="comments">'+p.comments.map(c=>'<div class="comment"><strong>'+c.username+'</strong> <span class="cmeta">'+c.created+'</span><br>'+c.text+'</div>').join('')+'</div>';}
-  let commentForm=currentUser?'<div class="comment-input"><input id="ci'+p.id+'" placeholder="Add a comment..."><button class="btn btn-primary" onclick="submitComment('+p.id+')">Post</button></div>':"";
-  postsDiv.innerHTML+='<div class="card"><h2>'+p.title+'</h2><div class="meta">by '+p.username+' &middot; '+p.created+'</div><div class="body">'+p.body+'</div>'+imgHtml+'<div class="actions"><button class="like-btn" '+likeClass+' onclick="doLike('+p.id+')">👍 '+likes+'</button><button class="dislike-btn" '+dislikeClass+' onclick="doDislike('+p.id+')">👎 '+dislikes+'</button>'+ownerBtns+'</div>'+commentsHtml+commentForm+'</div>';
-});}
-function doLike(id){if(!isLoggedIn()){location.href="login.html";return;}toggleLike(id);location.reload();}
-function doDislike(id){if(!isLoggedIn()){location.href="login.html";return;}toggleDislike(id);location.reload();}
-function doDelete(id){if(confirm("Delete this post?")){deletePost(id);location.reload();}}
-function submitComment(id){let inp=document.getElementById("ci"+id);if(inp.value.trim()){addComment(id,inp.value);location.reload();}}
+
+listenPosts(renderPosts);
+
+window.doLike = async function(id) { if (!isLoggedIn()) { location.href = "login.html"; return; } await toggleLike(id); };
+window.doDislike = async function(id) { if (!isLoggedIn()) { location.href = "login.html"; return; } await toggleDislike(id); };
+window.doDelete = async function(id) { if (confirm("Delete this post?")) { const { deletePost } = await import("./app.js"); await deletePost(id); } };
+window.submitComment = async function(id) { const inp = document.getElementById("ci" + id); if (inp && inp.value.trim()) { await addComment(id, inp.value); } };
 </script>
 </body>
 </html>
