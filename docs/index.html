@@ -1,2 +1,30 @@
 <!DOCTYPE html>
-<html><head><meta http-equiv="refresh" content="0; url=tower_defense/"></head><body><a href="tower_defense/">Loading...</a></body></html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeCoding</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,#ffecd2,#fcb69f,#a1c4fd,#c2e9fb);background-size:400% 400%;animation:gradShift 12s ease infinite}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.card{background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);border-radius:16px;padding:40px;text-align:center;max-width:500px;width:90%}
+h1{font-size:28px;margin-bottom:8px;color:#e91e63}
+p{color:#555;margin-bottom:24px}
+.links{display:flex;flex-direction:column;gap:12px}
+a{display:block;padding:14px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:16px;color:#fff;background:#e91e63;transition:background .2s}
+a:hover{background:#c2185b}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>VibeCoding</h1>
+  <p>A collection of projects</p>
+  <div class="links">
+    <a href="tower_defense/">Tower Defense Game</a>
+    <a href="blog/">Blog</a>
+  </div>
+</div>
+</body>
+</html>
