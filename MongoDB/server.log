@@ -67,3 +67,6 @@
  ✓ Compiled in 300ms (994 modules)
  ✓ Compiled in 341ms (994 modules)
  ○ Compiling /not-found ...
+ ✓ Compiled /not-found in 1319ms (877 modules)
+ ✓ Compiled /api/settings in 450ms (545 modules)
+ ✓ Compiled in 460ms (994 modules)

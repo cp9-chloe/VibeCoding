@@ -46,6 +46,9 @@ export default function Navbar() {
           <Link
             href="/posts"
             className="px-3 py-1 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
+            style={{ fontFamily: 'Montserrat' }}
+          >
+            All Posts
           </Link>
 
           {isLoggedIn && (
@@ -53,6 +56,9 @@ export default function Navbar() {
               <Link
                 href="/posts/myposts"
                 className="px-3 py-1 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
+                style={{ fontFamily: 'Montserrat' }}
+              >
+                My Posts
               </Link>
               <Link
                 href="/posts/trash"
