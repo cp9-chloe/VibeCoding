@@ -59,3 +59,5 @@
  ✓ Compiled in 232ms (320 modules)
  ✓ Compiled /posts in 144ms (511 modules)
  ✓ Compiled /api/posts in 130ms (513 modules)
+ ✓ Compiled /settings in 347ms (822 modules)
+ ✓ Compiled /api/settings in 190ms (516 modules)
