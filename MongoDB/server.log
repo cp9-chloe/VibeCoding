@@ -70,3 +70,5 @@
  ✓ Compiled /not-found in 1319ms (877 modules)
  ✓ Compiled /api/settings in 450ms (545 modules)
  ✓ Compiled in 460ms (994 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 671ms (550 modules)
