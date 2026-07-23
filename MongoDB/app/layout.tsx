@@ -3,7 +3,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: 'AI-Powered Blog',
+  title: 'ByteHorizon',
   description: 'A blog platform with AI writing assistance',
 };
 
