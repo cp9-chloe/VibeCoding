@@ -39,7 +39,16 @@ export default function AuthForm({ mode }: AuthFormProps) {
       router.push('/');
       router.refresh();
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Something went wrong');
+      const errorMsg = err.response?.data?.error || 'Something went wrong';
+
+      if (mode === 'signup' && errorMsg.toLowerCase().includes('already exists')) {
+        setError('error, username taken');
+        setUsername('');
+        setEmail('');
+        setPassword('');
+      } else {
+        setError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
