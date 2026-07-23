@@ -36,7 +36,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
         localStorage.setItem('username', res.data.username);
       }
 
-      router.push('/posts');
+      router.push('/');
       router.refresh();
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || 'Something went wrong';

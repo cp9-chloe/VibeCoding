@@ -23,3 +23,8 @@
  ✓ Compiled /api/posts/myposts in 162ms (505 modules)
  ✓ Compiled /posts/new in 319ms (809 modules)
  ✓ Compiled in 297ms (811 modules)
+ ✓ Compiled /api/auth/logout in 122ms (416 modules)
+ ✓ Compiled / in 146ms (421 modules)
+ ✓ Compiled /api/auth/login in 132ms (506 modules)
+ ✓ Compiled /api/posts in 126ms (509 modules)
+ ✓ Compiled in 297ms (821 modules)
