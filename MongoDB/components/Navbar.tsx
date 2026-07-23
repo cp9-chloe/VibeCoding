@@ -61,6 +61,13 @@ export default function Navbar() {
                 My Posts
               </Link>
               <Link
+                href="/posts/trash"
+                className="px-3 py-1 rounded-full text-sm font-medium hover:bg-red-100 text-red-600 transition-colors"
+                style={{ fontFamily: 'Montserrat' }}
+              >
+                🗑️ Trash
+              </Link>
+              <Link
                 href="/posts/new"
                 className="px-3 py-1 rounded-full text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors"
                 style={{ fontFamily: 'Montserrat' }}

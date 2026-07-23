@@ -10,6 +10,7 @@ export interface IPost extends Document {
   dislikes: number;
   likedBy: mongoose.Types.ObjectId[];
   dislikedBy: mongoose.Types.ObjectId[];
+  deleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -55,6 +56,10 @@ const PostSchema = new Schema<IPost>(
         ref: 'User',
       },
     ],
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

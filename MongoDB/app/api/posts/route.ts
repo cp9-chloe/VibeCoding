@@ -3,14 +3,28 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Post from '@/models/Post';
 import { getCurrentUserId } from '@/lib/auth';
 
-// GET /api/posts - Fetch all posts (for All Posts page)
+// GET /api/posts - Fetch all non-deleted posts (for All Posts page)
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
 
+    // Get search query from URL params
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') || '';
+
+    // Build query - only show non-deleted posts
+    const query: any = { deleted: { $ne: true } };
+
+    // If search query exists, search by title or content
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } },
+      ];
+    }
+
     // Get all posts, sorted by newest first
-    // Populate userId to get the username of the post author
-    const posts = await Post.find({})
+    const posts = await Post.find(query)
       .populate('userId', 'username')
       .sort({ createdAt: -1 });
 

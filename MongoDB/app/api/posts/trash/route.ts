@@ -3,7 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Post from '@/models/Post';
 import { getCurrentUserId } from '@/lib/auth';
 
-// GET /api/posts/myposts - Fetch posts by the logged-in user
+// GET /api/posts/trash - Fetch all deleted posts by the logged-in user
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
@@ -14,14 +14,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'You must be logged in' }, { status: 401 });
     }
 
-    // Get all non-deleted posts by this user, sorted by newest first
-    const posts = await Post.find({ userId, deleted: { $ne: true } })
+    // Get all deleted posts by this user, sorted by newest first
+    const posts = await Post.find({ userId, deleted: true })
       .populate('userId', 'username')
       .sort({ createdAt: -1 });
 
     return NextResponse.json(posts, { status: 200 });
   } catch (error) {
-    console.error('Fetch my posts error:', error);
+    console.error('Fetch trash error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

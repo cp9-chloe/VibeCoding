@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
-// DELETE /api/posts/[id] - Delete a post
+// DELETE /api/posts/[id] - Soft delete a post (move to trash)
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     await connectToDatabase();
@@ -84,10 +84,11 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'You can only delete your own posts' }, { status: 403 });
     }
 
-    // Delete the post
-    await Post.findByIdAndDelete(params.id);
+    // Soft delete - mark as deleted instead of removing
+    post.deleted = true;
+    await post.save();
 
-    return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
+    return NextResponse.json({ message: 'Post moved to trash' }, { status: 200 });
   } catch (error) {
     console.error('Delete post error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
