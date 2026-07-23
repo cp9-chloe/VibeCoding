@@ -3,3 +3,12 @@
    - Environments: .env.local
 
  ✓ Ready in 2s
+ ○ Compiling / ...
+ ✓ Compiled / in 4.9s (678 modules)
+ ✓ Compiled in 345ms (301 modules)
+ ✓ Compiled /posts in 368ms (672 modules)
+ ○ Compiling /api/posts ...
+ ✓ Compiled /api/posts in 567ms (485 modules)
+ ✓ Compiled in 230ms (789 modules)
+ ✓ Compiled in 180ms (789 modules)
+ ✓ Compiled in 400ms (789 modules)
