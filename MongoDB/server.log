@@ -15,3 +15,11 @@
  ○ Compiling /signup ...
  ✓ Compiled /signup in 721ms (782 modules)
  ✓ Compiled in 352ms (693 modules)
+ ✓ Compiled /api/auth/signup in 287ms (492 modules)
+ ✓ Compiled /api/posts in 112ms (495 modules)
+ ✓ Compiled /login in 268ms (789 modules)
+ ✓ Compiled /api/auth/login in 127ms (499 modules)
+ ✓ Compiled /posts/myposts in 440ms (797 modules)
+ ✓ Compiled /api/posts/myposts in 162ms (505 modules)
+ ✓ Compiled /posts/new in 319ms (809 modules)
+ ✓ Compiled in 297ms (811 modules)
