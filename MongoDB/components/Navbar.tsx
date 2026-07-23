@@ -38,7 +38,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left side: Logo */}
         <Link href="/" className="text-xl font-bold text-purple-600" style={{ fontFamily: 'Montserrat' }}>
-          ByteHorizon
+          ByteHorizon.com
         </Link>
 
         {/* Center: Navigation Links */}

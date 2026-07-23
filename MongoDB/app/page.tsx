@@ -12,7 +12,7 @@ export default function Home() {
           className="text-5xl font-bold text-gray-800 mb-4"
           style={{ fontFamily: 'Montserrat' }}
         >
-          ByteHorizon
+          ByteHorizon.com
         </h1>
         <p
           className="text-lg text-gray-600 mb-8 max-w-md"
