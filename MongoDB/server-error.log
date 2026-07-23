@@ -102,3 +102,44 @@ Import trace for requested module:
 ./components/Navbar.tsx
 ./app/layout.tsx
  ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ ./components/Navbar.tsx
+Error: 
+  [31mx[0m Unexpected token `nav`. Expected jsx identifier
+    ,-[[36;1;4mC:\Users\cece8\VibeCoding\MongoDB\components\Navbar.tsx[0m:34:1]
+ [2m34[0m |   };
+ [2m35[0m | 
+ [2m36[0m |   return (
+ [2m37[0m |     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-lg dark:border-b dark:border-slate-700 transition-colors">
+    : [31;1m     ^^^[0m
+ [2m38[0m |       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+ [2m39[0m |         {/* Left side: Logo */}
+ [2m40[0m |         <Link href="/" className="text-xl font-bold text-purple-600 dark:text-purple-400" style={{ fontFamily: 'Montserrat' }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Navbar.tsx
+./app/layout.tsx
+ ⨯ ./components/Navbar.tsx
+Error: 
+  [31mx[0m Unexpected token `nav`. Expected jsx identifier
+    ,-[[36;1;4mC:\Users\cece8\VibeCoding\MongoDB\components\Navbar.tsx[0m:34:1]
+ [2m34[0m |   };
+ [2m35[0m | 
+ [2m36[0m |   return (
+ [2m37[0m |     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-lg dark:border-b dark:border-slate-700 transition-colors">
+    : [31;1m     ^^^[0m
+ [2m38[0m |       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+ [2m39[0m |         {/* Left side: Logo */}
+ [2m40[0m |         <Link href="/" className="text-xl font-bold text-purple-600 dark:text-purple-400" style={{ fontFamily: 'Montserrat' }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Navbar.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
