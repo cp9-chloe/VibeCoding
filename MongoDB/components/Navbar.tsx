@@ -34,10 +34,10 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-lg dark:border-b dark:border-slate-700 transition-colors">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left side: Logo */}
-        <Link href="/" className="text-xl font-bold text-purple-600" style={{ fontFamily: 'Montserrat' }}>
+        <Link href="/" className="text-xl font-bold text-purple-600 dark:text-purple-400" style={{ fontFamily: 'Montserrat' }}>
           Blog
         </Link>
 
@@ -45,31 +45,25 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/posts"
-            className="px-3 py-1 rounded-full text-sm font-medium hover:bg-purple-100 transition-colors"
-            style={{ fontFamily: 'Montserrat' }}
-          >
-            All Posts
+            className="px-3 py-1 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
           </Link>
 
           {isLoggedIn && (
             <>
               <Link
                 href="/posts/myposts"
-                className="px-3 py-1 rounded-full text-sm font-medium hover:bg-purple-100 transition-colors"
-                style={{ fontFamily: 'Montserrat' }}
-              >
-                My Posts
+                className="px-3 py-1 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
               </Link>
               <Link
                 href="/posts/trash"
-                className="px-3 py-1 rounded-full text-sm font-medium hover:bg-red-100 text-red-600 transition-colors"
+                className="px-3 py-1 rounded-full text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
                 style={{ fontFamily: 'Montserrat' }}
               >
                 🗑️ Trash
               </Link>
               <Link
                 href="/posts/new"
-                className="px-3 py-1 rounded-full text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors"
+                className="px-3 py-1 rounded-full text-sm font-medium bg-purple-600 dark:bg-purple-700 text-white hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors"
                 style={{ fontFamily: 'Montserrat' }}
               >
                 New Post
@@ -84,17 +78,17 @@ export default function Navbar() {
             <>
               <Link
                 href="/settings"
-                className="px-3 py-1 rounded-full text-sm font-medium hover:bg-purple-100 transition-colors"
+                className="px-3 py-1 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
                 style={{ fontFamily: 'Montserrat' }}
               >
                 Settings
               </Link>
-              <span className="text-sm text-gray-600" style={{ fontFamily: 'Montserrat' }}>
+              <span className="text-sm text-gray-600 dark:text-gray-400" style={{ fontFamily: 'Montserrat' }}>
                 {username}
               </span>
               <button
                 onClick={handleLogout}
-                className="px-3 py-1 rounded-full text-sm font-medium bg-gray-200 hover:bg-gray-300 transition-colors"
+                className="px-3 py-1 rounded-full text-sm font-medium bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
                 style={{ fontFamily: 'Montserrat' }}
               >
                 Logout
@@ -104,14 +98,14 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="px-3 py-1 rounded-full text-sm font-medium hover:bg-purple-100 transition-colors"
+                className="px-3 py-1 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
                 style={{ fontFamily: 'Montserrat' }}
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="px-3 py-1 rounded-full text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors"
+                className="px-3 py-1 rounded-full text-sm font-medium bg-purple-600 dark:bg-purple-700 text-white hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors"
                 style={{ fontFamily: 'Montserrat' }}
               >
                 Sign Up

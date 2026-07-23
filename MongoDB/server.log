@@ -61,3 +61,8 @@
  ✓ Compiled /api/posts in 130ms (513 modules)
  ✓ Compiled /settings in 347ms (822 modules)
  ✓ Compiled /api/settings in 190ms (516 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /not-found in 736ms (877 modules)
+ ✓ Compiled /api/settings in 249ms (545 modules)
+ ✓ Compiled in 300ms (994 modules)
+ ✓ Compiled in 341ms (994 modules)

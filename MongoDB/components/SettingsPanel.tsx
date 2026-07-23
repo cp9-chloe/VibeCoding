@@ -19,6 +19,13 @@ export default function SettingsPanel() {
         setFontSize(res.data.fontSize);
         setNotifications(res.data.notifications);
         setLanguage(res.data.language);
+        
+        // Apply theme on load
+        if (res.data.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
       } catch (error) {
         console.error('Load settings error:', error);
       }
@@ -49,21 +56,21 @@ export default function SettingsPanel() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-2xl shadow-md p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6" style={{ fontFamily: 'Montserrat' }}>
+    <div className="max-w-md mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-md dark:shadow-lg p-6 transition-colors">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6" style={{ fontFamily: 'Montserrat' }}>
         Settings
       </h2>
 
       <div className="space-y-6">
         {/* Theme */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Montserrat' }}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={{ fontFamily: 'Montserrat' }}>
             Theme
           </label>
           <select
             value={theme}
             onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-100"
             style={{ fontFamily: 'Montserrat' }}
           >
             <option value="light">Light</option>
@@ -73,13 +80,13 @@ export default function SettingsPanel() {
 
         {/* Font Size */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Montserrat' }}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={{ fontFamily: 'Montserrat' }}>
             Font Size
           </label>
           <select
             value={fontSize}
             onChange={(e) => setFontSize(e.target.value as 'small' | 'medium' | 'large')}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-100"
             style={{ fontFamily: 'Montserrat' }}
           >
             <option value="small">Small</option>
@@ -90,13 +97,13 @@ export default function SettingsPanel() {
 
         {/* Notifications */}
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Montserrat' }}>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300" style={{ fontFamily: 'Montserrat' }}>
             Notifications
           </label>
           <button
             onClick={() => setNotifications(!notifications)}
             className={`w-12 h-6 rounded-full transition-colors ${
-              notifications ? 'bg-purple-600' : 'bg-gray-300'
+              notifications ? 'bg-purple-600' : 'bg-gray-300 dark:bg-gray-600'
             }`}
           >
             <div
@@ -109,13 +116,13 @@ export default function SettingsPanel() {
 
         {/* Language */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Montserrat' }}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={{ fontFamily: 'Montserrat' }}>
             Language
           </label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-100"
             style={{ fontFamily: 'Montserrat' }}
           >
             <option value="en">English</option>
@@ -126,7 +133,7 @@ export default function SettingsPanel() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors disabled:opacity-50"
+          className="w-full px-6 py-3 bg-purple-600 dark:bg-purple-700 text-white rounded-xl font-medium hover:bg-purple-700 dark:hover:bg-purple-800 transition-colors disabled:opacity-50"
           style={{ fontFamily: 'Montserrat' }}
         >
           {saving ? 'Saving...' : 'Save Settings'}

@@ -1,0 +1,104 @@
+ ⨯ ./app/layout.tsx:4:0
+Module not found: Can't resolve '@/components/ThemeProvider'
+[0m [90m 2 |[39m [36mimport[39m [32m'./globals.css'[39m[33m;[39m[0m
+[0m [90m 3 |[39m [36mimport[39m [33mNavbar[39m [36mfrom[39m [32m'@/components/Navbar'[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m [33mThemeProvider[39m [36mfrom[39m [32m'@/components/ThemeProvider'[39m[33m;[39m[0m
+[0m [90m 5 |[39m[0m
+[0m [90m 6 |[39m [36mexport[39m [36mconst[39m metadata[33m:[39m [33mMetadata[39m [33m=[39m {[0m
+[0m [90m 7 |[39m   title[33m:[39m [32m'Blog'[39m[33m,[39m[0m
+
+https://nextjs.org/docs/messages/module-not-found
+ ⨯ ./app/layout.tsx:4:0
+Module not found: Can't resolve '@/components/ThemeProvider'
+[0m [90m 2 |[39m [36mimport[39m [32m'./globals.css'[39m[33m;[39m[0m
+[0m [90m 3 |[39m [36mimport[39m [33mNavbar[39m [36mfrom[39m [32m'@/components/Navbar'[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m [33mThemeProvider[39m [36mfrom[39m [32m'@/components/ThemeProvider'[39m[33m;[39m[0m
+[0m [90m 5 |[39m[0m
+[0m [90m 6 |[39m [36mexport[39m [36mconst[39m metadata[33m:[39m [33mMetadata[39m [33m=[39m {[0m
+[0m [90m 7 |[39m   title[33m:[39m [32m'Blog'[39m[33m,[39m[0m
+
+https://nextjs.org/docs/messages/module-not-found
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ ./components/Navbar.tsx
+Error: 
+  [31mx[0m Unexpected token `nav`. Expected jsx identifier
+    ,-[[36;1;4mC:\Users\cece8\VibeCoding\MongoDB\components\Navbar.tsx[0m:34:1]
+ [2m34[0m |   };
+ [2m35[0m | 
+ [2m36[0m |   return (
+ [2m37[0m |     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-lg dark:border-b dark:border-slate-700 transition-colors">
+    : [31;1m     ^^^[0m
+ [2m38[0m |       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+ [2m39[0m |         {/* Left side: Logo */}
+ [2m40[0m |         <Link href="/" className="text-xl font-bold text-purple-600 dark:text-purple-400" style={{ fontFamily: 'Montserrat' }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Navbar.tsx
+./app/layout.tsx
+ ⨯ ./components/Navbar.tsx
+Error: 
+  [31mx[0m Unexpected token `nav`. Expected jsx identifier
+    ,-[[36;1;4mC:\Users\cece8\VibeCoding\MongoDB\components\Navbar.tsx[0m:34:1]
+ [2m34[0m |   };
+ [2m35[0m | 
+ [2m36[0m |   return (
+ [2m37[0m |     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-lg dark:border-b dark:border-slate-700 transition-colors">
+    : [31;1m     ^^^[0m
+ [2m38[0m |       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+ [2m39[0m |         {/* Left side: Logo */}
+ [2m40[0m |         <Link href="/" className="text-xl font-bold text-purple-600 dark:text-purple-400" style={{ fontFamily: 'Montserrat' }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Navbar.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ ./components/Navbar.tsx
+Error: 
+  [31mx[0m Unexpected token `nav`. Expected jsx identifier
+    ,-[[36;1;4mC:\Users\cece8\VibeCoding\MongoDB\components\Navbar.tsx[0m:34:1]
+ [2m34[0m |   };
+ [2m35[0m | 
+ [2m36[0m |   return (
+ [2m37[0m |     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-lg dark:border-b dark:border-slate-700 transition-colors">
+    : [31;1m     ^^^[0m
+ [2m38[0m |       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+ [2m39[0m |         {/* Left side: Logo */}
+ [2m40[0m |         <Link href="/" className="text-xl font-bold text-purple-600 dark:text-purple-400" style={{ fontFamily: 'Montserrat' }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Navbar.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ ./components/Navbar.tsx
+Error: 
+  [31mx[0m Unexpected token `nav`. Expected jsx identifier
+    ,-[[36;1;4mC:\Users\cece8\VibeCoding\MongoDB\components\Navbar.tsx[0m:34:1]
+ [2m34[0m |   };
+ [2m35[0m | 
+ [2m36[0m |   return (
+ [2m37[0m |     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-lg dark:border-b dark:border-slate-700 transition-colors">
+    : [31;1m     ^^^[0m
+ [2m38[0m |       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+ [2m39[0m |         {/* Left side: Logo */}
+ [2m40[0m |         <Link href="/" className="text-xl font-bold text-purple-600 dark:text-purple-400" style={{ fontFamily: 'Montserrat' }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/Navbar.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
