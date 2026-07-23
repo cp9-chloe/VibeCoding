@@ -28,3 +28,10 @@
  ✓ Compiled /api/auth/login in 132ms (506 modules)
  ✓ Compiled /api/posts in 126ms (509 modules)
  ✓ Compiled in 297ms (821 modules)
+ ○ Compiling /posts/[id] ...
+ ✓ Compiled /posts/[id] in 559ms (808 modules)
+ ✓ Compiled /api/posts/[id]/comments in 237ms (508 modules)
+ ✓ Compiled (511 modules)
+ ✓ Compiled /api/posts/[id]/like in 147ms (508 modules)
+ ✓ Compiled /api/posts/myposts in 202ms (510 modules)
+ ✓ Compiled /posts/[id]/edit in 247ms (818 modules)
