@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Customer Service Bot</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#f0f2f5; font-family:-apple-system,sans-serif; display:flex; justify-content:center; min-height:100vh; }
+.container { width:100%; max-width:640px; padding:20px; }
+h1 { margin:20px 0; text-align:center; color:#1a1a2e; }
+.card { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); padding:24px; margin-bottom:20px; }
+.card h2 { margin-bottom:16px; font-size:18px; color:#1a1a2e; }
+.form-group { display:flex; gap:8px; }
+.form-group input { flex:1; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:14px; outline:none; }
+.form-group input:focus { border-color:#533483; }
+.form-group button { padding:12px 24px; background:#533483; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; }
+.form-group button:hover { background:#6a42a0; }
+.form-group button:disabled { background:#ccc; cursor:not-allowed; }
+.status { margin-top:12px; padding:12px; border-radius:8px; display:none; }
+.status.success { display:block; background:#e8f5e9; color:#2e7d32; }
+.status.error { display:block; background:#ffebee; color:#c62828; }
+.stats { display:flex; gap:20px; }
+.stat { flex:1; text-align:center; padding:16px; background:#f5f3ff; border-radius:8px; }
+.stat .num { font-size:32px; font-weight:bold; color:#533483; }
+.stat .label { font-size:13px; color:#666; margin-top:4px; }
+.url-list { margin-top:12px; }
+.url-list li { padding:8px 0; border-bottom:1px solid #f0f0f0; word-break:break-all; font-size:13px; color:#333; }
+.url-list li:last-child { border:none; }
+.back-link { display:block; text-align:center; margin-top:16px; color:#533483; text-decoration:none; font-size:14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Admin Panel</h1>
+
+  <div class="card">
+    <h2>Index a Website</h2>
+    <div class="form-group">
+      <input type="url" id="url-input" placeholder="https://www.comrite.com" value="https://www.comrite.com">
+      <button id="index-btn">Index</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Statistics</h2>
+    <div class="stats">
+      <div class="stat">
+        <div class="num" id="chunk-count">{{ chunk_count }}</div>
+        <div class="label">Text Chunks</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="url-count">{{ urls|length }}</div>
+        <div class="label">Pages Indexed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Indexed URLs</h2>
+    {% if urls %}
+    <ul class="url-list">
+      {% for url in urls %}
+      <li>{{ url }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color:#888;font-size:14px;">No URLs indexed yet.</p>
+    {% endif %}
+  </div>
+
+  <a href="/" class="back-link">Back to Chat</a>
+</div>
+
+<script>
+const indexBtn = document.getElementById("index-btn");
+const urlInput = document.getElementById("url-input");
+const statusDiv = document.getElementById("status");
+
+indexBtn.addEventListener("click", async () => {
+  const url = urlInput.value.trim();
+  if (!url) return;
+
+  indexBtn.disabled = true;
+  indexBtn.textContent = "Indexing...";
+  statusDiv.className = "status";
+  statusDiv.textContent = "";
+
+  try {
+    const resp = await fetch("/api/index", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    const data = await resp.json();
+    if (resp.ok) {
+      statusDiv.className = "status success";
+      statusDiv.textContent = `Done — ${data.pages_indexed} pages, ${data.chunks} chunks. Reloading...`;
+      setTimeout(() => location.reload(), 1500);
+    } else {
+      statusDiv.className = "status error";
+      statusDiv.textContent = data.error || "Failed to index";
+    }
+  } catch (err) {
+    statusDiv.className = "status error";
+    statusDiv.textContent = "Error: " + err.message;
+  }
+
+  indexBtn.disabled = false;
+  indexBtn.textContent = "Index";
+});
+</script>
+</body>
+</html>
