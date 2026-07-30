@@ -37,12 +37,12 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'You must be logged in' }, { status: 401 });
     }
 
-    const { theme, fontSize, notifications, language } = await request.json();
+    const { fontSize, notifications, language } = await request.json();
 
     // Find and update settings, or create if they don't exist
     const settings = await Settings.findOneAndUpdate(
       { userId },
-      { theme, fontSize, notifications, language },
+      { fontSize, notifications, language },
       { new: true, upsert: true }
     );
 

@@ -172,3 +172,90 @@ Import trace for requested module:
 <w>  at file dependencies C:\Users\cece8\VibeCoding\MongoDB\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
 <w>  at file C:\Users\cece8\VibeCoding\MongoDB\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
 <w>  at resolve commonjs C:\Users\cece8\VibeCoding\MongoDB\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+ ⨯ ./components/ThemeProvider.tsx
+Error: Failed to read source code from C:\Users\cece8\VibeCoding\MongoDB\components\ThemeProvider.tsx
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./components/ThemeProvider.tsx
+./app/layout.tsx
+ ⨯ ./components/ThemeProvider.tsx
+Error: Failed to read source code from C:\Users\cece8\VibeCoding\MongoDB\components\ThemeProvider.tsx
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./components/ThemeProvider.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./components/ThemeProvider.tsx
+Error: Failed to read source code from C:\Users\cece8\VibeCoding\MongoDB\components\ThemeProvider.tsx
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./components/ThemeProvider.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./components/ThemeProvider.tsx
+Error: Failed to read source code from C:\Users\cece8\VibeCoding\MongoDB\components\ThemeProvider.tsx
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./components/ThemeProvider.tsx
+./app/layout.tsx
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ app\layout.tsx (18:9) @ ThemeProvider
+ ⨯ ReferenceError: ThemeProvider is not defined
+    at RootLayout (./app/layout.tsx:21:99)
+    at stringify (<anonymous>)
+[0m [90m 16 |[39m     [33m<[39m[33mhtml[39m lang[33m=[39m[32m"en"[39m[33m>[39m[0m
+[0m [90m 17 |[39m       [33m<[39m[33mbody[39m[33m>[39m[0m
+[0m[31m[1m>[22m[39m[90m 18 |[39m         [33m<[39m[33mThemeProvider[39m[33m>[39m[0m
+[0m [90m    |[39m         [31m[1m^[22m[39m[0m
+[0m [90m 19 |[39m           [33m<[39m[33mNavbar[39m [33m/[39m[33m>[39m[0m
+[0m [90m 20 |[39m           {children}[0m
+[0m [90m 21 |[39m         [33m<[39m[33m/[39m[33mThemeProvider[39m[33m>[39m[0m
+ ⨯ app\layout.tsx (18:9) @ ThemeProvider
+ ⨯ ReferenceError: ThemeProvider is not defined
+    at RootLayout (./app/layout.tsx:21:99)
+    at stringify (<anonymous>)
+digest: "3822246109"
+[0m [90m 16 |[39m     [33m<[39m[33mhtml[39m lang[33m=[39m[32m"en"[39m[33m>[39m[0m
+[0m [90m 17 |[39m       [33m<[39m[33mbody[39m[33m>[39m[0m
+[0m[31m[1m>[22m[39m[90m 18 |[39m         [33m<[39m[33mThemeProvider[39m[33m>[39m[0m
+[0m [90m    |[39m         [31m[1m^[22m[39m[0m
+[0m [90m 19 |[39m           [33m<[39m[33mNavbar[39m [33m/[39m[33m>[39m[0m
+[0m [90m 20 |[39m           {children}[0m
+[0m [90m 21 |[39m         [33m<[39m[33m/[39m[33mThemeProvider[39m[33m>[39m[0m
+ ⨯ app\layout.tsx (18:9) @ ThemeProvider
+ ⨯ ReferenceError: ThemeProvider is not defined
+    at RootLayout (./app/layout.tsx:21:99)
+    at stringify (<anonymous>)
+[0m [90m 16 |[39m     [33m<[39m[33mhtml[39m lang[33m=[39m[32m"en"[39m[33m>[39m[0m
+[0m [90m 17 |[39m       [33m<[39m[33mbody[39m[33m>[39m[0m
+[0m[31m[1m>[22m[39m[90m 18 |[39m         [33m<[39m[33mThemeProvider[39m[33m>[39m[0m
+[0m [90m    |[39m         [31m[1m^[22m[39m[0m
+[0m [90m 19 |[39m           [33m<[39m[33mNavbar[39m [33m/[39m[33m>[39m[0m
+[0m [90m 20 |[39m           {children}[0m
+[0m [90m 21 |[39m         [33m<[39m[33m/[39m[33mThemeProvider[39m[33m>[39m[0m
+ ⨯ app\layout.tsx (18:9) @ ThemeProvider
+ ⨯ ReferenceError: ThemeProvider is not defined
+    at RootLayout (./app/layout.tsx:21:99)
+    at stringify (<anonymous>)
+digest: "3822246109"
+[0m [90m 16 |[39m     [33m<[39m[33mhtml[39m lang[33m=[39m[32m"en"[39m[33m>[39m[0m
+[0m [90m 17 |[39m       [33m<[39m[33mbody[39m[33m>[39m[0m
+[0m[31m[1m>[22m[39m[90m 18 |[39m         [33m<[39m[33mThemeProvider[39m[33m>[39m[0m
+[0m [90m    |[39m         [31m[1m^[22m[39m[0m
+[0m [90m 19 |[39m           [33m<[39m[33mNavbar[39m [33m/[39m[33m>[39m[0m
+[0m [90m 20 |[39m           {children}[0m
+[0m [90m 21 |[39m         [33m<[39m[33m/[39m[33mThemeProvider[39m[33m>[39m[0m
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.

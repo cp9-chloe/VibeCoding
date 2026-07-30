@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function SettingsPanel() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [notifications, setNotifications] = useState(true);
   const [language, setLanguage] = useState('en');
@@ -15,17 +14,9 @@ export default function SettingsPanel() {
     const loadSettings = async () => {
       try {
         const res = await axios.get('/api/settings');
-        setTheme(res.data.theme);
         setFontSize(res.data.fontSize);
         setNotifications(res.data.notifications);
         setLanguage(res.data.language);
-        
-        // Apply theme on load
-        if (res.data.theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
       } catch (error) {
         console.error('Load settings error:', error);
       }
@@ -37,14 +28,7 @@ export default function SettingsPanel() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await axios.put('/api/settings', { theme, fontSize, notifications, language });
-
-      // Apply theme immediately
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      await axios.put('/api/settings', { fontSize, notifications, language });
 
       alert('Settings saved!');
     } catch (error) {
@@ -62,22 +46,6 @@ export default function SettingsPanel() {
       </h2>
 
       <div className="space-y-6">
-        {/* Theme */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={{ fontFamily: 'Montserrat' }}>
-            Theme
-          </label>
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-            className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-100"
-            style={{ fontFamily: 'Montserrat' }}
-          >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </div>
-
         {/* Font Size */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" style={{ fontFamily: 'Montserrat' }}>

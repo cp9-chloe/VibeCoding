@@ -74,3 +74,11 @@
  ✓ Compiled /login in 671ms (550 modules)
  ○ Compiling /signup ...
  ✓ Compiled /signup in 703ms (548 modules)
+ ✓ Compiled in 243ms (436 modules)
+ ○ Compiling /not-found ...
+ ✓ Compiled /not-found in 197ms (448 modules)
+ ✓ Compiled in 606ms (885 modules)
+ ✓ Compiled in 355ms (885 modules)
+ ✓ Compiled in 689ms (885 modules)
+ ✓ Compiled in 572ms (885 modules)
+ ✓ Compiled in 487ms (885 modules)
